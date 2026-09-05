@@ -4,5 +4,7 @@ packages:
 
 allowBuilds:
   nx: true
+  esbuild: true
+  "@parcel/watcher": true
 
 nodeVersion: 22.23.2
