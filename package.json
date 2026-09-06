@@ -12,6 +12,8 @@
     "build:shell": "nx build @recrm/shell-host"
   },
   "dependencies": {
+    "single-spa": "^6.0.3",
+    "single-spa-vue": "^3.0.1",
     "vue": "^3.5.42"
   },
   "devDependencies": {

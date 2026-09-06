@@ -6,12 +6,14 @@ export default defineConfig(
     root: "apps/shell-host",
     cacheDir: "../../node_modules/.vite/apps/shell-host",
     server: {
-      port: 4200,
+      port: 4201,
       host: "localhost",
+      cors: true,
     },
     preview: {
-      port: 4300,
+      port: 4301,
       host: "localhost",
+      cors: true,
     },
     resolve: { tsconfigPaths: true },
     plugins: [vue()],
@@ -21,15 +23,19 @@ export default defineConfig(
 
       outDir: "../../dist/apps/shell-host",
       emptyOutDir: true,
-      rolldownOptions: {
-        output: {
-          format: "es",
-          entryFileNames: "shell-host.js",
-        },
+
+      // NOTE: USE LIB OR ROLLDOWN
+      lib: {
+        entry: "src/main.ts",
+        formats: ["es"],
+        fileName: () => "shell-host.js",
       },
-      // reportCompressedSize: true,
-      // commonjsOptions: {
-      //   transformMixedEsModules: true,
+      // rolldownOptions: {
+      //   output: {
+      //     // Native ESM
+      //     format: "es",
+      //     entryFileNames: "shell-host.js",
+      //   },
       // },
     },
   }),
