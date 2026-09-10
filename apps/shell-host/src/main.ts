@@ -1,5 +1,3 @@
-import "./styles.scss"
-
 import singleSpaVue from "single-spa-vue"
 import { createApp, h } from "vue"
 
