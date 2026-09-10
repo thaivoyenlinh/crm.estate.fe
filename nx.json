@@ -3,18 +3,12 @@
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
     },
     "preview": {
-      "cache": true,
-      "dependsOn": [
-        "build"
-      ]
+      "cache": false,
+      "dependsOn": ["build"]
     },
     "lint": {
       "cache": true
@@ -23,5 +17,28 @@
       "cache": false
     }
   },
-  "analytics": true
+  "analytics": true,
+  "plugins": [
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    }
+  ],
+  "generators": {
+    "@nx/web:application": {
+      "style": "scss",
+      "linter": "none",
+      "unitTestRunner": "none",
+      "e2eTestRunner": "none"
+    }
+  }
 }
