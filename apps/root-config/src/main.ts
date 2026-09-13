@@ -6,4 +6,10 @@ registerApplication({
   activeWhen: ["/"],
 })
 
+registerApplication({
+  name: "@recrm/leads",
+  app: () => import("@recrm/leads"),
+  activeWhen: ["/leads"],
+})
+
 start()
