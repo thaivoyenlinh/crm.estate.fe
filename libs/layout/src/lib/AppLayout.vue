@@ -5,8 +5,8 @@
     <div class="body">
       <aside class="sidebar">CRM Sidebar</aside>
 
-      <main class="content">
-        <slot />
+      <main class="content" style="flex: 1; padding: 20px">
+        <router-view />
       </main>
     </div>
   </div>

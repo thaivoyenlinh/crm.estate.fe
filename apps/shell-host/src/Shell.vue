@@ -3,7 +3,5 @@ import { AppLayout } from "@recrm/layout"
 </script>
 
 <template>
-  <AppLayout>
-    <h1>Shell Host tét</h1>
-  </AppLayout>
+  <AppLayout> </AppLayout>
 </template>

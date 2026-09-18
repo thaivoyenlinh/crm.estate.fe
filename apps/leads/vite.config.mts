@@ -35,6 +35,7 @@ export default defineConfig(
       port: 4202,
       host: "localhost",
       cors: true,
+      origin: "http://localhost:4202",
       strictPort: true,
     },
     preview: {

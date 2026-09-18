@@ -35,6 +35,7 @@ export default defineConfig(
       port: 4201,
       host: "localhost",
       cors: true,
+      // origin: "http://localhost:4201",
       strictPort: true,
     },
     preview: {
@@ -42,8 +43,8 @@ export default defineConfig(
       host: "localhost",
       cors: true,
     },
-    resolve: { tsconfigPaths: true },
     plugins: [vue(), shellHostDevEntry],
+    resolve: { tsconfigPaths: true },
 
     build: {
       target: "es2022",
@@ -57,13 +58,6 @@ export default defineConfig(
         formats: ["es"],
         fileName: () => "shell-host.js",
       },
-      // rolldownOptions: {
-      //   output: {
-      //     // Native ESM
-      //     format: "es",
-      //     entryFileNames: "shell-host.js",
-      //   },
-      // },
     },
   }),
 )

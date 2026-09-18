@@ -1,7 +1,8 @@
 import singleSpaVue from "single-spa-vue"
 import { createApp, h } from "vue"
 
-import App from "./app/App.vue"
+import App from "./Shell.vue"
+import router from "./router"
 
 const vueLifecycles = singleSpaVue({
   createApp,
@@ -10,11 +11,9 @@ const vueLifecycles = singleSpaVue({
       return h(App)
     },
   },
+  handleInstance(app) {
+    app.use(router)
+  },
 })
 
-export const bootstrap = vueLifecycles.bootstrap
-export const mount = vueLifecycles.mount
-export const unmount = vueLifecycles.unmount
-
-// const app = createApp(App)
-// app.mount("#root")
+export const { bootstrap, mount, unmount } = vueLifecycles

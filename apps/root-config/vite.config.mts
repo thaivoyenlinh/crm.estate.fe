@@ -5,7 +5,7 @@ function viteNativeEsmMfePlugin(importKeys: string[]) {
     name: "vite-plugin-native-esm-mfe",
     enforce: "pre" as const,
 
-    // 1. Chặn khâu resolve mặc định của Vite
+    // 1. Intercept Vite's default resolve step
     resolveId(id: string) {
       if (importKeys.some((key) => id === key || id.startsWith(key))) {
         return { id, external: true }
@@ -13,7 +13,7 @@ function viteNativeEsmMfePlugin(importKeys: string[]) {
       return null
     },
 
-    // 2. HACK VÀO CORE VITE: Đánh chặn sau khi vite:import-analysis tự chèn ép /@id/
+    // 2. HACK INTO VITE CORE: intercept after vite:import-analysis forces in /@id/
     configResolved(config: any) {
       const VALID_ID_PREFIX = `/@id/`
       const reg = new RegExp(`${VALID_ID_PREFIX}(${importKeys.join("|")})`, "g")
@@ -21,7 +21,7 @@ function viteNativeEsmMfePlugin(importKeys: string[]) {
       config.plugins.push({
         name: "vite-plugin-strip-id-prefix",
         transform(code: string, id: string) {
-          // Nếu phát hiện Vite đã chèn /@id/@recrm thì xóa sạch /@id/ đi để trả về chuỗi import ESM gốc
+          // If Vite has injected /@id/@recrm, strip /@id/ out to restore the original ESM import string
           if (code.includes(VALID_ID_PREFIX)) {
             const updatedCode = code.replace(reg, "$1")
             return { code: updatedCode, map: null }
@@ -62,12 +62,8 @@ export default defineConfig(
         external: ["@recrm/shell-host", /^@recrm\/.*/],
       },
       modulePreload: {
-        polyfill: false, // Tắt tự động preload vì ta nạp động qua importmap
+        polyfill: false, // Disable automatic preload since we load dynamically via the import map
       },
-      // reportCompressedSize: true,
-      // commonjsOptions: {
-      //   transformMixedEsModules: true,
-      // },
     },
   }),
 )
