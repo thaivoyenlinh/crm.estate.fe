@@ -1,26 +1,21 @@
-import { createRouter, createWebHistory } from "vue-router"
-import { MfeContainer } from "../components"
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+
+import { MfeContainer } from "@/components"
+import { MFE_APPS } from "@/constants"
+
+const mfeRouters: RouteRecordRaw[] = Object.values(MFE_APPS).map((app) => ({
+  path: `/${app.path}/:pathMatch(.*)*`,
+  component: MfeContainer,
+  meta: {
+    moduleName: app.module,
+  },
+}))
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    // Internal dashboard page, written directly in the shell if preferred
-    {
-      path: "/",
-      component: {
-        template: "<div><h3>Chào mừng tới Hệ thống RECRM Dashboard</h3></div>",
-      },
-    },
-
-    // Dynamic route for the LEADS application
-    {
-      path: "/leads/:pathMatch(.*)*", // Matches /leads and every path beneath it
-      component: MfeContainer,
-      meta: { moduleName: "leads" }, // Maps straight to the suffix in the import map (@recrm/leads)
-    },
-
-    // To add a new app later (e.g. customers), just copy this block:
-    // { path: '/customers/:pathMatch(.*)*', component: MfeContainer, meta: { moduleName: 'customers' } }
+    // Dynamic route for MFE application
+    ...mfeRouters,
   ],
 })
 

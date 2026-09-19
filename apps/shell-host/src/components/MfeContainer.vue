@@ -30,7 +30,7 @@ const loadMicroFrontend = async (moduleName) => {
 
   try {
     // 2. Dynamically load the .js file from the import map configured at the root
-    const mfeModule = await import(/* @vite-ignore */ `@recrm/${moduleName}`)
+    const mfeModule = await import(/* @vite-ignore */ moduleName)
 
     // 3. Use a single-spa Parcel to mount the child app's UI into Vue's ref element
     parcelInstance = mountRootParcel(mfeModule, {
