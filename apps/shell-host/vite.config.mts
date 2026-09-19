@@ -52,9 +52,7 @@ export default defineConfig(
     },
 
     build: {
-      target: "es2022",
-
-      outDir: "../../dist/apps/shell-host",
+      outDir: "dist",
       emptyOutDir: true,
 
       // NOTE: USE LIB OR ROLLDOWN

@@ -56,7 +56,7 @@ export default defineConfig(
     },
 
     build: {
-      outDir: "../../dist/apps/root-config",
+      outDir: "dist",
       emptyOutDir: true,
       rolldownOptions: {
         external: ["@recrm/shell-host", /^@recrm\/.*/],

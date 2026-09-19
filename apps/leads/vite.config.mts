@@ -47,7 +47,7 @@ export default defineConfig(
     },
     plugins: [vue(), leadsDevEntry],
     build: {
-      outDir: "../../dist/apps/leads",
+      outDir: "dist",
       emptyOutDir: true,
 
       lib: {
