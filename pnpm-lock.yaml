@@ -165,6 +165,16 @@ importers:
         specifier: ^3.3.11
         version: 3.3.11(typescript@6.0.3)
 
+  apps/leads: {}
+
+  apps/shell-host:
+    dependencies:
+      '@recrm/layout':
+        specifier: workspace:*
+        version: link:../../libs/layout
+
+  libs/layout: {}
+
 packages:
 
   '@babel/code-frame@7.29.7':

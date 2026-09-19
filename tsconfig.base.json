@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "composite": false,
     "declaration": false,
-    "paths": {
-      // libs
-      "@recrm/layout": ["./libs/layout/src/index.ts"]
-    }
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
   }
 }

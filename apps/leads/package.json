@@ -1,0 +1,10 @@
+{
+  "name": "@recrm/leads",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "projectType": "application",
+    "sourceRoot": "apps/leads/src"
+  }
+}
