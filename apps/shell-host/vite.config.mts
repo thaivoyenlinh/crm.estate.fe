@@ -44,7 +44,12 @@ export default defineConfig(
       cors: true,
     },
     plugins: [vue(), shellHostDevEntry],
-    resolve: { tsconfigPaths: true },
+    resolve: {
+      tsconfigPaths: true,
+      alias: {
+        "@": path.resolve(import.meta.dirname, "src"),
+      },
+    },
 
     build: {
       target: "es2022",
