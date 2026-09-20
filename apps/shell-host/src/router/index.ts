@@ -13,10 +13,7 @@ const mfeRouters: RouteRecordRaw[] = Object.values(MFE_APPS).map((app) => ({
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [
-    // Dynamic route for MFE application
-    ...mfeRouters,
-  ],
+  routes: [...mfeRouters],
 })
 
 export default router
