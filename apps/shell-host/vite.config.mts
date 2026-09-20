@@ -2,48 +2,31 @@ import { defineConfig, type UserConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import path from "node:path"
 
-const shellHostDevEntry = {
-  name: "shell-host-dev-entry",
+import {
+  SHARED_EXTERNALS,
+  viteSharedExternals,
+} from "../../scripts/vite-shared-externals.mjs"
+import { MFE_APPS } from "./src/constants/mfe"
 
-  configureServer(server) {
-    server.middlewares.use("/shell-host.js", async (_req, res, next) => {
-      try {
-        const entry = path.resolve(server.config.root, "src/main.ts")
-
-        const result = await server.transformRequest(entry)
-
-        if (!result) {
-          next()
-          return
-        }
-
-        res.statusCode = 200
-        res.setHeader("Content-Type", "application/javascript")
-        res.end(result.code)
-      } catch (error) {
-        next(error)
-      }
-    })
-  },
-}
+const mfeModules = Object.values(MFE_APPS).map((app) => app.module)
 
 export default defineConfig(
   (): UserConfig => ({
     root: import.meta.dirname,
     cacheDir: "../../node_modules/.vite/apps/shell-host",
     server: {
-      port: 4201,
+      port: 9001,
       host: "localhost",
       cors: true,
-      // origin: "http://localhost:4201",
+      origin: "http://localhost:9001",
       strictPort: true,
     },
     preview: {
-      port: 4301,
+      port: 9101,
       host: "localhost",
       cors: true,
     },
-    plugins: [vue(), shellHostDevEntry],
+    plugins: [vue(), viteSharedExternals(mfeModules)],
     resolve: {
       tsconfigPaths: true,
       alias: {
@@ -55,11 +38,14 @@ export default defineConfig(
       outDir: "dist",
       emptyOutDir: true,
 
-      // NOTE: USE LIB OR ROLLDOWN
       lib: {
         entry: "src/main.ts",
         formats: ["es"],
         fileName: () => "shell-host.js",
+      },
+
+      rolldownOptions: {
+        external: [...mfeModules, ...SHARED_EXTERNALS],
       },
     },
   }),

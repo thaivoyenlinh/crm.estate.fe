@@ -34,7 +34,7 @@ crm.estate.fe/
 │       │   ├── styles.scss
 │       │   └── vue-shims.d.ts
 │       ├── index.html
-│       ├── vite.config.mts        # dev :4200, preview :4300
+│       ├── vite.config.mts        # dev :9001, preview :9101
 │       ├── project.json           # explicit dev + build targets
 │       ├── tsconfig.json
 │       └── tsconfig.app.json
@@ -72,8 +72,9 @@ pnpm install
 pnpm dev:shell
 ```
 
-The shell serves on **http://localhost:4200**. If that port is taken, Vite falls back to
-the next free one and prints the URL it chose.
+The shell serves on **http://localhost:9001**. The ports are fixed (`strictPort`), because
+root-config's import map addresses each app by port - Vite fails to start rather than
+moving to a free port, so an app is never reachable at an address the map does not name.
 
 ## Scripts
 
@@ -82,7 +83,7 @@ Run from the repository root:
 | Script             | Command                      | What it does                                    |
 | ------------------ | ---------------------------- | ----------------------------------------------- |
 | `pnpm graph`       | `nx graph`                   | Opens the interactive project dependency graph. |
-| `pnpm dev:shell`   | `nx dev @recrm/shell-host`   | Starts the shell dev server on :4200.           |
+| `pnpm dev:shell`   | `nx dev @recrm/shell-host`   | Starts the shell dev server on :9001.           |
 | `pnpm build:shell` | `nx build @recrm/shell-host` | Builds the shell to `dist/apps/shell-host`.     |
 | `pnpm dev:all`     | `nx run-many -t dev`         | Starts the `dev` target of every project.       |
 | `pnpm build:all`   | `nx run-many -t build`       | Builds every project.                           |
