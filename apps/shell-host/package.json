@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "dependencies": {
-    "@recrm/layout": "workspace:*"
-  },
   "nx": {
     "projectType": "application",
     "sourceRoot": "apps/shell-host/src"

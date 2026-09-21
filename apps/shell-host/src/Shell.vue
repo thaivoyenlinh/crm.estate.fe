@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppLayout } from "@recrm/layout"
+import { AppLayout } from "@/layouts"
 </script>
 
 <template>
