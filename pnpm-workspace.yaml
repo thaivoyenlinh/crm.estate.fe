@@ -7,5 +7,6 @@ allowBuilds:
   esbuild: true
   "@parcel/watcher": true
   '@swc/core': true
+  core-js: true
 
 nodeVersion: 22.23.2

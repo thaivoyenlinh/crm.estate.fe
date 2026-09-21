@@ -1,5 +1,10 @@
 export const SHARED_RUNTIME = [
   {
+    pkg: "ant-design-vue",
+    from: "ant-design-vue/dist/antd.esm.min.js",
+    to: "antd.js",
+  },
+  {
     pkg: "single-spa",
     from: "single-spa/lib/es2015/esm/single-spa.min.js",
     to: "single-spa.js",

@@ -1,4 +1,5 @@
 import { defineConfig, type UserConfig } from "vite"
+import tailwindcss from "@tailwindcss/vite"
 
 import { MFE_MODULES } from "../../scripts/shared-runtime.mjs"
 import { viteSharedExternals } from "../../scripts/vite-shared-externals.mjs"
@@ -22,7 +23,7 @@ export default defineConfig(
     resolve: {
       tsconfigPaths: true,
     },
-    plugins: [viteSharedExternals(mfeModules), viteImportMap()],
+    plugins: [tailwindcss(), viteSharedExternals(mfeModules), viteImportMap()],
 
     build: {
       outDir: "dist",
