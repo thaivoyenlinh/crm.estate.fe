@@ -16,6 +16,7 @@
   "dependencies": {
     "ant-design-vue": "4.2.6",
     "single-spa": "^6.0.3",
+    "single-spa-css": "^4.0.1",
     "single-spa-vue": "^3.0.1",
     "vue": "^3.5.42",
     "vue-router": "^5.3.1"

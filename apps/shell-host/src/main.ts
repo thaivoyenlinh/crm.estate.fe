@@ -1,8 +1,13 @@
+import singleSpaCss from "single-spa-css"
 import singleSpaVue from "single-spa-vue"
 import { createApp, h } from "vue"
 
 import Shell from "./Shell.vue"
 import router from "./router"
+
+const cssLifecycles = singleSpaCss({
+  cssUrls: import.meta.env.DEV ? [] : ["/shell-host/shell-host.css"],
+})
 
 const vueLifecycles = singleSpaVue({
   createApp,
@@ -16,4 +21,6 @@ const vueLifecycles = singleSpaVue({
   },
 })
 
-export const { bootstrap, mount, unmount } = vueLifecycles
+export const bootstrap = [cssLifecycles.bootstrap, vueLifecycles.bootstrap]
+export const mount = [cssLifecycles.mount, vueLifecycles.mount]
+export const unmount = [vueLifecycles.unmount, cssLifecycles.unmount]

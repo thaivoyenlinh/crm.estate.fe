@@ -5,6 +5,11 @@ export const SHARED_RUNTIME = [
     to: "antd.js",
   },
   {
+    pkg: "single-spa-css",
+    from: "single-spa-css/lib/esm/single-spa-css.min.js",
+    to: "single-spa-css.js",
+  },
+  {
     pkg: "single-spa",
     from: "single-spa/lib/es2015/esm/single-spa.min.js",
     to: "single-spa.js",
@@ -28,10 +33,12 @@ export const MFE_MODULES = [
     module: "@recrm/shell-host",
     port: 9001,
     buildPath: "/shell-host/shell-host.js",
+    cssPath: "/shell-host/shell-host.css",
   },
   {
     module: "@recrm/leads",
     port: 9002,
     buildPath: "/leads/leads.js",
+    cssPath: "/leads/leads.css",
   },
 ]
