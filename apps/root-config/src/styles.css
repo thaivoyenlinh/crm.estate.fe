@@ -1,9 +1,4 @@
-@import "ant-design-vue/dist/reset.css";
-
 @layer theme, base, components, utilities;
 
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
-
-@source "../../../apps/*/src/**/*.{vue,ts}";
-@source "../../../libs/*/src/**/*.{vue,ts}";
+@import "ant-design-vue/dist/reset.css" layer(base);
+@import "@recrm/styles/config/theme.scss" layer(theme) theme(static);

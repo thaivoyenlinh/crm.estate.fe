@@ -1,4 +1,5 @@
 import { defineConfig, type UserConfig } from "vite"
+import tailwindcss from "@tailwindcss/vite"
 import vue from "@vitejs/plugin-vue"
 import path from "node:path"
 
@@ -26,7 +27,7 @@ export default defineConfig(
       host: "localhost",
       cors: true,
     },
-    plugins: [vue(), viteSharedExternals(mfeModules)],
+    plugins: [tailwindcss(), vue(), viteSharedExternals(mfeModules)],
     resolve: {
       tsconfigPaths: true,
       alias: {

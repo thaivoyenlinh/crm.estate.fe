@@ -1,4 +1,5 @@
 import { defineConfig, type UserConfig } from "vite"
+import tailwindcss from "@tailwindcss/vite"
 import vue from "@vitejs/plugin-vue"
 
 import { SHARED_EXTERNALS, viteSharedExternals } from "../../scripts/vite-shared-externals.mjs"
@@ -22,7 +23,7 @@ export default defineConfig(
     resolve: {
       tsconfigPaths: true,
     },
-    plugins: [vue(), viteSharedExternals()],
+    plugins: [tailwindcss(), vue(), viteSharedExternals()],
     build: {
       outDir: "dist",
       emptyOutDir: true,

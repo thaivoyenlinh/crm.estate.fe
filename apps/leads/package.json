@@ -6,5 +6,8 @@
   "nx": {
     "projectType": "application",
     "sourceRoot": "apps/leads/src"
+  },
+  "dependencies": {
+    "@recrm/styles": "workspace:*"
   }
 }

@@ -2,6 +2,8 @@ import singleSpaCss from "single-spa-css"
 import singleSpaVue from "single-spa-vue"
 import { createApp, h } from "vue"
 
+import "./styles.css"
+
 import Shell from "./Shell.vue"
 import router from "./router"
 

@@ -177,11 +177,25 @@ importers:
         specifier: ^3.3.11
         version: 3.3.11(typescript@6.0.3)
 
-  apps/leads: {}
+  apps/leads:
+    dependencies:
+      '@recrm/styles':
+        specifier: workspace:*
+        version: link:../../libs/styles
 
-  apps/root-config: {}
+  apps/root-config:
+    dependencies:
+      '@recrm/styles':
+        specifier: workspace:*
+        version: link:../../libs/styles
 
-  apps/shell-host: {}
+  apps/shell-host:
+    dependencies:
+      '@recrm/styles':
+        specifier: workspace:*
+        version: link:../../libs/styles
+
+  libs/styles: {}
 
 packages:
 
