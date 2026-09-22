@@ -34,7 +34,7 @@ const loadMicroFrontend = async (moduleName) => {
     isLoading.value = false
   } catch (error) {
     console.error(
-      `Không thể kích hoạt module Micro Frontend [@recrm/${moduleName}]:`,
+      `Không thể kích hoạt module Micro Frontend [${moduleName}]:`,
       error,
     )
     isLoading.value = false
