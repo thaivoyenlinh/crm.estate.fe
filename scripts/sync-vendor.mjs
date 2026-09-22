@@ -7,6 +7,10 @@ import { SHARED_RUNTIME } from "./shared-runtime.mjs"
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const vendorDir = resolve(repoRoot, "apps/root-config/public/vendor")
 
+const vendorSources = SHARED_RUNTIME.flatMap(({ from, fromProd, pkg, to, toProd }) =>
+  fromProd ? [{ from, pkg, to }, { from: fromProd, pkg, to: toProd }] : [{ from, pkg, to }],
+)
+
 const readVersion = async (pkg) => {
   const manifest = resolve(repoRoot, "node_modules", pkg, "package.json")
   return JSON.parse(await readFile(manifest, "utf8")).version
@@ -15,7 +19,7 @@ const readVersion = async (pkg) => {
 const assertVendorFilesExist = async () => {
   const missing = []
 
-  for (const { from, pkg } of SHARED_RUNTIME) {
+  for (const { from, pkg } of vendorSources) {
     try {
       await access(resolve(repoRoot, "node_modules", from))
     } catch {
@@ -35,9 +39,9 @@ const main = async () => {
 
   const versions = {}
 
-  for (const { pkg, from, to } of SHARED_RUNTIME) {
+  for (const { pkg, from, to } of vendorSources) {
     await copyFile(resolve(repoRoot, "node_modules", from), resolve(vendorDir, to))
-    versions[pkg] = await readVersion(pkg)
+    versions[pkg] ??= await readVersion(pkg)
     console.log(`vendor: ${to} <- ${pkg}@${versions[pkg]}`)
   }
 

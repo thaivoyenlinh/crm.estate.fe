@@ -16,8 +16,10 @@ export const SHARED_RUNTIME = [
   },
   {
     pkg: "vue",
-    from: "vue/dist/vue.runtime.esm-browser.prod.js",
+    from: "vue/dist/vue.runtime.esm-browser.js",
+    fromProd: "vue/dist/vue.runtime.esm-browser.prod.js",
     to: "vue.js",
+    toProd: "vue.prod.js",
   },
   {
     pkg: "vue-router",

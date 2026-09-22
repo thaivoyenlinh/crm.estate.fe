@@ -8,7 +8,12 @@ export const buildImportMap = (isBuild) => ({
         isBuild ? buildPath : `http://localhost:${port}/src/main.ts`,
       ]),
     ),
-    ...Object.fromEntries(SHARED_RUNTIME.map(({ pkg, to }) => [pkg, `/vendor/${to}`])),
+    ...Object.fromEntries(
+      SHARED_RUNTIME.map(({ pkg, to, toProd }) => [
+        pkg,
+        `/vendor/${isBuild ? (toProd ?? to) : to}`,
+      ]),
+    ),
   },
 })
 
