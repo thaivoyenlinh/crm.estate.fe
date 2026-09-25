@@ -3,12 +3,19 @@ import { resolve } from "node:path"
 
 import { MFE_MODULES, SHARED_RUNTIME } from "../../scripts/shared-runtime.mjs"
 
+const LOCAL_VERSION = "local"
+
+const mfeBuildUrl = (module) => {
+  const name = module.replace("@recrm/", "")
+  return `/mfe/${name}/${LOCAL_VERSION}/${name}.js`
+}
+
 export const buildImportMap = (isBuild) => ({
   imports: {
     ...Object.fromEntries(
-      MFE_MODULES.map(({ buildPath, module, port }) => [
+      MFE_MODULES.map(({ module, port }) => [
         module,
-        isBuild ? buildPath : `http://localhost:${port}/src/main.ts`,
+        isBuild ? mfeBuildUrl(module) : `http://localhost:${port}/src/main.ts`,
       ]),
     ),
     ...Object.fromEntries(
