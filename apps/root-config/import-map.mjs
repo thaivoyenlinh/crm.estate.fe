@@ -1,3 +1,6 @@
+import { rm } from "node:fs/promises"
+import { resolve } from "node:path"
+
 import { MFE_MODULES, SHARED_RUNTIME } from "../../scripts/shared-runtime.mjs"
 
 export const buildImportMap = (isBuild) => ({
@@ -33,5 +36,22 @@ export const viteImportMap = () => ({
         },
       ]
     },
+  },
+})
+
+const DEV_ONLY_VENDOR = SHARED_RUNTIME.filter(({ toProd }) => toProd).map(
+  ({ to }) => to,
+)
+
+export const viteDropDevVendor = () => ({
+  name: "vite-plugin-drop-dev-vendor",
+  apply: "build",
+
+  async writeBundle({ dir }) {
+    await Promise.all(
+      DEV_ONLY_VENDOR.map((file) =>
+        rm(resolve(dir, "vendor", file), { force: true }),
+      ),
+    )
   },
 })
