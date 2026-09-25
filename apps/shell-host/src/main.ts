@@ -8,7 +8,9 @@ import Shell from "./Shell.vue"
 import router from "./router"
 
 const cssLifecycles = singleSpaCss({
-  cssUrls: import.meta.env.DEV ? [] : ["/shell-host/shell-host.css"],
+  cssUrls: import.meta.env.DEV
+    ? []
+    : [new URL(/* @vite-ignore */ "./shell-host.css", import.meta.url).href],
 })
 
 const vueLifecycles = singleSpaVue({
