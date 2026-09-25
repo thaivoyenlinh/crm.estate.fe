@@ -3,7 +3,11 @@ import tailwindcss from "@tailwindcss/vite"
 
 import { MFE_MODULES } from "../../scripts/shared-runtime.mjs"
 import { viteSharedExternals } from "../../scripts/vite-shared-externals.mjs"
-import { viteDropDevVendor, viteImportMap } from "./import-map.mjs"
+import {
+  viteDropDevVendor,
+  viteImportMap,
+  viteImportMapFile,
+} from "./import-map.mjs"
 
 const mfeModules = MFE_MODULES.map(({ module }) => module)
 
@@ -27,6 +31,7 @@ export default defineConfig(
       tailwindcss(),
       viteSharedExternals(mfeModules),
       viteImportMap(),
+      viteImportMapFile(),
       viteDropDevVendor(),
     ],
 

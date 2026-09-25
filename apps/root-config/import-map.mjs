@@ -22,19 +22,68 @@ export const buildImportMap = (isBuild) => ({
 
 export const viteImportMap = () => ({
   name: "vite-plugin-import-map",
+  apply: "serve",
 
   transformIndexHtml: {
     order: "pre",
 
-    handler(_html, ctx) {
+    handler() {
       return [
         {
           tag: "script",
           attrs: { type: "importmap" },
-          children: JSON.stringify(buildImportMap(!ctx.server), null, 2),
+          children: JSON.stringify(buildImportMap(false), null, 2),
           injectTo: "head-prepend",
         },
       ]
+    },
+  },
+})
+
+const IMPORT_MAP_FILE = "importmap.json"
+
+const bootstrapScript = (entry) => `
+fetch("/${IMPORT_MAP_FILE}", { cache: "no-cache" })
+  .then((response) => response.json())
+  .then((importMap) => {
+    const script = document.createElement("script")
+    script.type = "importmap"
+    script.textContent = JSON.stringify(importMap)
+    document.head.append(script)
+    return import("${entry}")
+  })
+  .catch((error) => console.error("Không tải được import map:", error))
+`
+
+export const viteImportMapFile = () => ({
+  name: "vite-plugin-import-map-file",
+  apply: "build",
+
+  generateBundle() {
+    this.emitFile({
+      type: "asset",
+      fileName: IMPORT_MAP_FILE,
+      source: JSON.stringify(buildImportMap(true), null, 2),
+    })
+  },
+
+  transformIndexHtml: {
+    order: "post",
+
+    handler(html, { chunk }) {
+      const entry = `/${chunk.fileName}`
+
+      return {
+        html: html.replace(
+          new RegExp(
+            `<script type="module"[^>]*src="${entry}"[^>]*></script>\\s*`,
+          ),
+          "",
+        ),
+        tags: [
+          { tag: "script", children: bootstrapScript(entry), injectTo: "head" },
+        ],
+      }
     },
   },
 })
