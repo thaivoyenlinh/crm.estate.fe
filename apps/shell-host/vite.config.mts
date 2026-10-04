@@ -16,14 +16,14 @@ export default defineConfig(
     root: import.meta.dirname,
     cacheDir: "../../node_modules/.vite/apps/shell-host",
     server: {
-      port: 9001,
+      port: 4201,
       host: "localhost",
       cors: true,
-      origin: "http://localhost:9001",
+      origin: "http://localhost:4201",
       strictPort: true,
     },
     preview: {
-      port: 9101,
+      port: 4301,
       host: "localhost",
       cors: true,
     },

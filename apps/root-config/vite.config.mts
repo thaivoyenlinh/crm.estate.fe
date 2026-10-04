@@ -16,12 +16,12 @@ export default defineConfig(
     root: import.meta.dirname,
     cacheDir: "../../node_modules/.vite/apps/root-config",
     server: {
-      port: 9000,
+      port: 4200,
       host: "localhost",
       strictPort: true,
     },
     preview: {
-      port: 9100,
+      port: 4300,
       host: "localhost",
     },
     resolve: {

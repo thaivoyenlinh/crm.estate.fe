@@ -9,14 +9,14 @@ export default defineConfig(
     root: import.meta.dirname,
     cacheDir: "../../node_modules/.vite/apps/leads",
     server: {
-      port: 9002,
+      port: 4202,
       host: "localhost",
       cors: true,
-      origin: "http://localhost:9002",
+      origin: "http://localhost:4202",
       strictPort: true,
     },
     preview: {
-      port: 9102,
+      port: 4302,
       host: "localhost",
       cors: true,
     },
