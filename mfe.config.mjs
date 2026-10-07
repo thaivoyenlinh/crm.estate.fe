@@ -38,6 +38,10 @@ export const viteSharedExternals = (extraKeys = []) => {
       return null
     },
 
+    config() {
+      return { optimizeDeps: { exclude: keys } }
+    },
+
     configResolved(config) {
       const pattern = new RegExp(`${VALID_ID_PREFIX}(${keys.join("|")})`, "g")
 
