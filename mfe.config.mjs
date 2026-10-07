@@ -21,6 +21,11 @@ export const SHARED_RUNTIME = [
 
 export const SHARED_EXTERNALS = SHARED_RUNTIME.map(({ pkg }) => pkg)
 
+export const mfeUrl = (module, version) => {
+  const name = module.replace("@recrm/", "")
+  return `/mfe/${name}/${version}/${name}.js`
+}
+
 const VALID_ID_PREFIX = "/@id/"
 
 export const viteSharedExternals = (extraKeys = []) => {

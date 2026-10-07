@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { basename, resolve } from "node:path"
 
-import { MFE_MODULES, SHARED_RUNTIME } from "../../mfe.config.mjs"
+import { MFE_MODULES, SHARED_RUNTIME, mfeUrl } from "../../mfe.config.mjs"
 
 const IMPORT_MAP_FILE = "importmap.json"
 const LOCAL_VERSION = "local"
@@ -19,17 +19,14 @@ const vendorFiles = (isBuild) =>
     return { pkg, source, url: `/vendor/${pkg}@${version}/${basename(source)}` }
   })
 
-const mfeBuildUrl = (module) => {
-  const name = module.replace("@recrm/", "")
-  return `/mfe/${name}/${LOCAL_VERSION}/${name}.js`
-}
-
 const buildImportMap = (isBuild, vendor) => ({
   imports: {
     ...Object.fromEntries(
       MFE_MODULES.map(({ module, port }) => [
         module,
-        isBuild ? mfeBuildUrl(module) : `http://localhost:${port}/src/main.ts`,
+        isBuild
+          ? mfeUrl(module, LOCAL_VERSION)
+          : `http://localhost:${port}/src/main.ts`,
       ]),
     ),
     ...Object.fromEntries(vendor.map(({ pkg, url }) => [pkg, url])),
