@@ -3,8 +3,8 @@
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": [
+      "{workspaceRoot}/mfe.config.mjs",
       "{workspaceRoot}/pnpm-lock.yaml",
-      "{workspaceRoot}/scripts/**/*",
       "{workspaceRoot}/tsconfig.base.json"
     ]
   },

@@ -10,7 +10,7 @@ import router from "./router"
 const cssLifecycles = singleSpaCss({
   cssUrls: import.meta.env.DEV
     ? []
-    : [new URL(/* @vite-ignore */ "./shell-host.css", import.meta.url).href],
+    : [import.meta.url.replace(/\.js$/, ".css")],
 })
 
 const vueLifecycles = singleSpaVue({

@@ -1,180 +1,96 @@
 # crm.estate.fe
 
-Frontend for the Estate CRM, built as a micro-frontend (MFE) architecture.
-
-> **Status:** bootstrapping. The workspace holds one application (`@recrm/shell-host`) and
-> one shared library (`@recrm/layout`). Dev server, type-check and production build all
-> work; the MFE composition mechanism has not been chosen yet.
+Frontend for the Estate CRM, built as micro-frontends: **single-spa** composes independently
+built Vue apps at runtime, and a native browser **import map** tells the page where each app
+and each shared library lives.
 
 ## Stack
 
-| Concern         | Choice                                         |
-| --------------- | ---------------------------------------------- |
-| Runtime         | Node 22.23.2 (pinned in `pnpm-workspace.yaml`) |
-| Package manager | pnpm 12.1.0 (pinned in `package.json`)         |
-| Monorepo        | pnpm workspaces + Nx 23 as the task runner     |
-| Framework       | Vue 3.5                                        |
-| Bundler         | Vite 8, wired into Nx via `@nx/vite`           |
-| Styling         | SCSS (`sass`)                                  |
-| Language        | TypeScript 6, type-checked with `vue-tsc`      |
-| Formatting      | Prettier 3 (`semi: false`)                     |
+| Concern         | Choice                                          |
+| --------------- | ----------------------------------------------- |
+| Runtime         | Node 22.23.2 (pinned in `pnpm-workspace.yaml`)  |
+| Package manager | pnpm 12.1.0 (pinned in `package.json`)          |
+| Monorepo        | pnpm workspaces + Nx 23 as the task runner      |
+| Composition     | single-spa 6 + native import maps               |
+| Framework       | Vue 3.5, ant-design-vue 4                       |
+| Bundler         | Vite 8 (Rolldown), wired into Nx via `@nx/vite` |
+| Styling         | Tailwind CSS 4 + SCSS                           |
+| Language        | TypeScript 6, type-checked with `vue-tsc`       |
 
-The MFE composition mechanism (Module Federation, native federation, or something else)
-has not been decided yet. `@recrm/shell-host` is the future shell; no remotes exist.
-
-## Repository layout
+## Layout
 
 ```
 crm.estate.fe/
-├── apps/                          # deployable micro-frontends
-│   └── shell-host/                # @recrm/shell-host — the shell application
-│       ├── src/
-│       │   ├── app/App.vue        # renders AppLayout from @recrm/layout
-│       │   ├── main.ts            # mounts the app on #root
-│       │   ├── styles.scss
-│       │   └── vue-shims.d.ts
-│       ├── index.html
-│       ├── vite.config.mts        # dev :4201, preview :4301
-│       ├── project.json           # explicit dev + build targets
-│       ├── tsconfig.json
-│       └── tsconfig.app.json
-├── libs/                          # shared code the apps consume
-│   └── layout/                    # @recrm/layout
-│       ├── src/
-│       │   ├── lib/AppLayout.vue  # header + sidebar + content slot
-│       │   ├── index.ts
-│       │   └── vue-shims.d.ts
-│       ├── project.json
-│       ├── tsconfig.json
-│       └── tsconfig.lib.json
-├── nx.json                        # target defaults + @nx/vite plugin
-├── package.json                   # root scripts and shared devDependencies
-├── pnpm-workspace.yaml            # workspace globs + pinned Node version
-├── tsconfig.base.json             # shared compiler options + @recrm/* aliases
-├── .prettierrc / .prettierignore
-└── pnpm-lock.yaml
+├── apps/
+│   ├── root-config/   # the page the browser opens: import map + single-spa start
+│   ├── shell-host/    # layout (header, sidebar) and the router that mounts child apps
+│   └── leads/         # first child app
+├── libs/
+│   └── styles/        # @recrm/styles — shared theme variables
+├── mfe.config.mjs     # MFE_MODULES, SHARED_RUNTIME and the shared Vite config
+└── nx.json
 ```
 
-Which directory a package belongs in is decided by deployability: if it ships as a running
-frontend it goes in `apps/`, otherwise in `libs/`.
+`apps/` holds what ships as a running frontend, `libs/` holds code the apps consume.
 
-## Packages
+## How the pieces fit
 
-| Package             | Location          | Type        | Purpose                                                  |
-| ------------------- | ----------------- | ----------- | -------------------------------------------------------- |
-| `@recrm/shell-host` | `apps/shell-host` | application | The shell. Renders `AppLayout` with placeholder content. |
-| `@recrm/layout`     | `libs/layout`     | library     | Shared application shell: header, sidebar, content slot. |
+- **`MFE_MODULES`** (`mfe.config.mjs`) lists every app loaded through the import map, with its
+  dev port. In dev the map points at each app's own Vite server
+  (`http://localhost:4202/src/main.ts`); in a build it points at
+  `/mfe/<name>/<version>/<name>.js`.
+- **`SHARED_RUNTIME`** lists the libraries every app shares — Vue, vue-router, single-spa,
+  ant-design-vue. Apps keep them external; root-config serves them from `node_modules` in dev
+  and writes them to `dist/vendor/<pkg>@<version>/` in a build, together with `importmap.json`.
+- **Child apps** (`shell-host`, `leads`) are libraries, not pages: their entry exports
+  single-spa lifecycles. Each `vite.config.mts` is one call to `mfeViteConfig`, which derives
+  ports and output file names from the folder name.
 
 ## Getting started
 
 ```bash
 pnpm install
-pnpm dev:shell
+pnpm dev:all
 ```
 
-The shell serves on **http://localhost:4201**. The ports are fixed (`strictPort`), because
-root-config's import map addresses each app by port - Vite fails to start rather than
-moving to a free port, so an app is never reachable at an address the map does not name.
+Open **http://localhost:4200**. Ports are fixed (`strictPort`) because the dev import map
+addresses each app by port:
+
+| App         | Dev  | Preview |
+| ----------- | ---- | ------- |
+| root-config | 4200 | 4300    |
+| shell-host  | 4201 | 4301    |
+| leads       | 4202 | 4302    |
 
 ## Scripts
 
-Run from the repository root:
+| Script             | What it does                                         |
+| ------------------ | ---------------------------------------------------- |
+| `pnpm dev:all`     | Starts every app's dev server.                       |
+| `pnpm build:all`   | Builds every app into `apps/<app>/dist`.             |
+| `pnpm dev:shell`   | Starts only the shell (useless without root-config). |
+| `pnpm build:shell` | Builds only the shell.                               |
+| `pnpm graph`       | Opens the Nx project graph.                          |
 
-| Script             | Command                      | What it does                                    |
-| ------------------ | ---------------------------- | ----------------------------------------------- |
-| `pnpm graph`       | `nx graph`                   | Opens the interactive project dependency graph. |
-| `pnpm dev:shell`   | `nx dev @recrm/shell-host`   | Starts the shell dev server on :4201.           |
-| `pnpm build:shell` | `nx build @recrm/shell-host` | Builds the shell to `dist/apps/shell-host`.     |
-| `pnpm dev:all`     | `nx run-many -t dev`         | Starts the `dev` target of every project.       |
-| `pnpm build:all`   | `nx run-many -t build`       | Builds every project.                           |
+Type-check with `pnpm exec nx run-many -t typecheck`.
 
-## Task running
+## Adding a child app
 
-Targets come from two places.
+1. Create `apps/<name>/` with a `package.json` named `@recrm/<name>` — the folder name must
+   match, since the Vite config and the import map derive file names from it.
+2. Add `vite.config.mts`: `export default defineConfig(mfeViteConfig(import.meta.dirname))`.
+3. Export single-spa lifecycles from `src/main.ts` (copy `apps/leads`).
+4. Add `{ module: "@recrm/<name>", port: <next port> }` to `MFE_MODULES`.
+5. Add a route entry to `MFE_APPS` in `apps/shell-host/src/constants/mfe.ts`.
 
-**`nx.json` target defaults** — inherited by every project, so they are not repeated per
-package:
+## Nx caching
 
-| Target    | Cached | Depends on | Notes                                        |
-| --------- | ------ | ---------- | -------------------------------------------- |
-| `build`   | yes    | `^build`   | dependencies build first; output is `dist/`  |
-| `preview` | no     | `build`    | continuous target — Nx forbids caching these |
-| `lint`    | yes    | —          | does not need dependencies built             |
-| `dev`     | no     | —          | a dev server is long-running, never replayed |
-
-**`@nx/vite/plugin`** — registered under `plugins` in `nx.json`, it infers targets for any
-project holding a `vite.config.*`: `build`, `dev`, `serve`, `preview`, `serve-static`,
-`typecheck`, `build-deps` and `watch-deps`. `apps/shell-host/project.json` additionally
-declares `dev` and `build` explicitly, which take precedence. `@recrm/layout` has no Vite
-config and declares no targets, so it contributes nothing runnable.
-
-To see what a project actually resolves to:
-
-```bash
-pnpm exec nx show project @recrm/shell-host --web
-```
-
-## Build output
-
-`pnpm build:shell` writes to `dist/apps/shell-host`:
-
-```
-dist/apps/shell-host/
-├── index.html
-├── shell-host.js              # entry — fixed name, no content hash
-└── assets/index-<hash>.css
-```
-
-`apps/shell-host/vite.config.mts` pins the entry filename through
-`build.rolldownOptions.output.entryFileNames` and emits ES modules targeting `es2022`. The
-unhashed, predictable filename is what a host needs to load a remote at a stable URL, so
-this is the shape an MFE remote entry takes — even though no federation plugin is wired up
-yet. CSS keeps its content hash, since nothing loads it by name.
-
-## Path aliases
-
-Workspace packages are imported by name, resolved through `tsconfig.base.json`:
-
-```ts
-import { AppLayout } from "@recrm/layout"
-```
-
-| Alias           | Resolves to                |
-| --------------- | -------------------------- |
-| `@recrm/layout` | `libs/layout/src/index.ts` |
-
-`apps/shell-host/vite.config.mts` sets `resolve: { tsconfigPaths: true }`, so the bundler
-honours the same aliases without repeating them.
-
-Importing a library across package boundaries also requires the consuming app's
-`tsconfig.app.json` to set `"rootDir": "../../"`. Without it `vue-tsc` rejects the import
-with `TS6059: … is not under 'rootDir'`, because the library's sources sit outside the app
-directory. `apps/shell-host` already does this.
-
-## Known issues
-
-The repository is mid-bootstrap. These are known and not yet fixed:
-
-1. **The Nx Vite executors are deprecated.** `apps/shell-host/project.json` calls
-   `@nx/vite:dev-server` and `@nx/vite:build` directly; Nx removes both in v24 and warns on
-   every run. `@nx/vite/plugin` is already registered in `nx.json` and infers equivalent
-   targets — migrate with `nx g @nx/vite:convert-to-inferred` and drop the explicit block.
-
-2. **No linting is configured.** `nx.json` defines a `lint` target default, but no project
-   provides a `lint` target and no ESLint config exists.
-
-3. **No tests.** There is no test runner — Vitest is not in `devDependencies` and no spec
-   files exist.
-
-4. **`@recrm/layout` has no targets.** It has no Vite config and declares `"targets": {}`,
-   so it is never built or type-checked on its own; it is only compiled as part of an app
-   that imports it.
+Builds are cached. Besides each project's own files, `nx.json` marks `mfe.config.mjs`,
+`pnpm-lock.yaml` and `tsconfig.base.json` as shared inputs, because every build reads them —
+change one and all apps rebuild.
 
 ## Conventions
 
-- Prettier owns formatting — no semicolons. Run `pnpm exec prettier --write .` before
-  committing.
-- Commit messages follow Conventional Commits; `.vscode/settings.json` seeds the `repo`
-  scope.
-- Never commit secrets. `.env` files are git-ignored; `.env.example` is the tracked
-  template.
+- Prettier owns formatting — no semicolons.
+- Commit messages follow Conventional Commits.
+- Never commit secrets. `.env` files are git-ignored; `.env.example` is the tracked template.

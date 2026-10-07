@@ -1,16 +1,30 @@
-import { rm } from "node:fs/promises"
-import { resolve } from "node:path"
+import { readFileSync } from "node:fs"
+import { basename, resolve } from "node:path"
 
-import { MFE_MODULES, SHARED_RUNTIME } from "../../scripts/shared-runtime.mjs"
+import { MFE_MODULES, SHARED_RUNTIME } from "../../mfe.config.mjs"
 
+const IMPORT_MAP_FILE = "importmap.json"
 const LOCAL_VERSION = "local"
+
+const nodeModules = resolve(import.meta.dirname, "../../node_modules")
+
+const vendorFiles = (isBuild) =>
+  SHARED_RUNTIME.map(({ devFile, file, pkg }) => {
+    const pkgDir = resolve(nodeModules, pkg)
+    const { version } = JSON.parse(
+      readFileSync(resolve(pkgDir, "package.json"), "utf8"),
+    )
+    const source = resolve(pkgDir, isBuild ? file : (devFile ?? file))
+
+    return { pkg, source, url: `/vendor/${pkg}@${version}/${basename(source)}` }
+  })
 
 const mfeBuildUrl = (module) => {
   const name = module.replace("@recrm/", "")
   return `/mfe/${name}/${LOCAL_VERSION}/${name}.js`
 }
 
-export const buildImportMap = (isBuild) => ({
+const buildImportMap = (isBuild, vendor) => ({
   imports: {
     ...Object.fromEntries(
       MFE_MODULES.map(({ module, port }) => [
@@ -18,18 +32,31 @@ export const buildImportMap = (isBuild) => ({
         isBuild ? mfeBuildUrl(module) : `http://localhost:${port}/src/main.ts`,
       ]),
     ),
-    ...Object.fromEntries(
-      SHARED_RUNTIME.map(({ pkg, to, toProd }) => [
-        pkg,
-        `/vendor/${isBuild ? (toProd ?? to) : to}`,
-      ]),
-    ),
+    ...Object.fromEntries(vendor.map(({ pkg, url }) => [pkg, url])),
   },
 })
 
 export const viteImportMap = () => ({
   name: "vite-plugin-import-map",
   apply: "serve",
+
+  configureServer(server) {
+    const sources = new Map(
+      vendorFiles(false).map(({ source, url }) => [url, source]),
+    )
+
+    server.middlewares.use((req, res, next) => {
+      const source = sources.get(req.url)
+
+      if (source) {
+        res.setHeader("Content-Type", "text/javascript")
+        res.end(readFileSync(source))
+        return
+      }
+
+      next()
+    })
+  },
 
   transformIndexHtml: {
     order: "pre",
@@ -39,15 +66,17 @@ export const viteImportMap = () => ({
         {
           tag: "script",
           attrs: { type: "importmap" },
-          children: JSON.stringify(buildImportMap(false), null, 2),
+          children: JSON.stringify(
+            buildImportMap(false, vendorFiles(false)),
+            null,
+            2,
+          ),
           injectTo: "head-prepend",
         },
       ]
     },
   },
 })
-
-const IMPORT_MAP_FILE = "importmap.json"
 
 const bootstrapScript = (entry) => `
 fetch("/${IMPORT_MAP_FILE}", { cache: "no-cache" })
@@ -67,10 +96,20 @@ export const viteImportMapFile = () => ({
   apply: "build",
 
   generateBundle() {
+    const vendor = vendorFiles(true)
+
+    for (const { source, url } of vendor) {
+      this.emitFile({
+        type: "asset",
+        fileName: url.slice(1),
+        source: readFileSync(source),
+      })
+    }
+
     this.emitFile({
       type: "asset",
       fileName: IMPORT_MAP_FILE,
-      source: JSON.stringify(buildImportMap(true), null, 2),
+      source: JSON.stringify(buildImportMap(true, vendor), null, 2),
     })
   },
 
@@ -92,22 +131,5 @@ export const viteImportMapFile = () => ({
         ],
       }
     },
-  },
-})
-
-const DEV_ONLY_VENDOR = SHARED_RUNTIME.filter(({ toProd }) => toProd).map(
-  ({ to }) => to,
-)
-
-export const viteDropDevVendor = () => ({
-  name: "vite-plugin-drop-dev-vendor",
-  apply: "build",
-
-  async writeBundle({ dir }) {
-    await Promise.all(
-      DEV_ONLY_VENDOR.map((file) =>
-        rm(resolve(dir, "vendor", file), { force: true }),
-      ),
-    )
   },
 })
