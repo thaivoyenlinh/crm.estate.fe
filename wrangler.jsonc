@@ -2,6 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "crm-estate-fe",
   "main": "deploy/worker.mjs",
-  "r2_buckets": [{ "binding": "SITE", "bucket_name": "crm-estate-fe" }],
+  "kv_namespaces": [
+    { "binding": "SITE", "id": "c8355fe655d244b4a6a8b04338c0a16b" },
+  ],
   "compatibility_date": "2026-10-01",
 }

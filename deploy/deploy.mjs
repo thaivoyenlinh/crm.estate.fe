@@ -5,8 +5,9 @@ import { dirname, join, relative, resolve } from "node:path"
 
 import { MFE_MODULES, SHARED_EXTERNALS, mfeUrl } from "../mfe.config.mjs"
 
-const BUCKET = "crm-estate-fe"
+const BINDING = "SITE"
 const IMPORT_MAP_KEY = "importmap.json"
+const LOCAL_MISSING = "Value not found\n"
 
 const args = process.argv.slice(2)
 const [command, name, version] = args.filter((arg) => !arg.startsWith("--"))
@@ -14,24 +15,31 @@ const storage = args.includes("--local") ? "--local" : "--remote"
 const tempDir = mkdtempSync(join(tmpdir(), "deploy-"))
 const workspaceRoot = resolve(import.meta.dirname, "..")
 
-const wrangler = (...wranglerArgs) =>
+const wrangler = (wranglerArgs, stdout = "inherit") =>
   execFileSync(
     process.execPath,
     [
       resolve(workspaceRoot, "node_modules/wrangler/bin/wrangler.js"),
       ...wranglerArgs,
+      "--binding",
+      BINDING,
       storage,
     ],
-    { cwd: workspaceRoot, stdio: "inherit" },
+    {
+      cwd: workspaceRoot,
+      encoding: "utf8",
+      stdio: ["inherit", stdout, "inherit"],
+    },
   )
 
 const putObject = (key, file) =>
-  wrangler("r2", "object", "put", `${BUCKET}/${key}`, "--file", file)
+  wrangler(["kv", "key", "put", key, "--path", file])
 
+// Key không có: --remote ném lỗi 404, còn --local in LOCAL_MISSING rồi exit 0
 const getObject = (key) => {
-  const file = join(tempDir, key.replaceAll("/", "_"))
-  wrangler("r2", "object", "get", `${BUCKET}/${key}`, "--file", file)
-  return readFileSync(file, "utf8")
+  const value = wrangler(["kv", "key", "get", key], "pipe")
+  if (value === LOCAL_MISSING) throw new Error(`Không có "${key}" trên KV`)
+  return value
 }
 
 const listFiles = (dir) =>
