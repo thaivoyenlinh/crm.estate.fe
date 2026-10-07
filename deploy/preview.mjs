@@ -1,16 +1,10 @@
 import { cpSync, existsSync, readFileSync, rmSync } from "node:fs"
 import { createServer } from "node:http"
-import { dirname, extname, resolve } from "node:path"
+import { dirname, resolve } from "node:path"
 
 import { MFE_MODULES } from "../mfe.config.mjs"
-import { cacheControl, resolveKey } from "./site-rules.mjs"
+import { cacheControl, contentType, resolveKey } from "./site-rules.mjs"
 
-const CONTENT_TYPES = {
-  ".css": "text/css",
-  ".html": "text/html; charset=utf-8",
-  ".js": "text/javascript",
-  ".json": "application/json",
-}
 const PORT = 4400
 
 const workspaceRoot = resolve(import.meta.dirname, "..")
@@ -57,7 +51,7 @@ createServer((req, res) => {
   }
   res.writeHead(200, {
     "Cache-Control": cacheControl(key),
-    "Content-Type": CONTENT_TYPES[extname(key)] ?? "application/octet-stream",
+    "Content-Type": contentType(key),
   })
   res.end(body)
 }).listen(PORT, "localhost", () => {

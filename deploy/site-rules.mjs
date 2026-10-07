@@ -3,6 +3,16 @@ const IMMUTABLE_PREFIXES = ["assets/", "mfe/", "vendor/"]
 const INDEX_KEY = "index.html"
 const NO_CACHE = "no-cache"
 
+const CONTENT_TYPES = {
+  ".css": "text/css",
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript",
+  ".json": "application/json",
+}
+
+export const contentType = (key) =>
+  CONTENT_TYPES[key.slice(key.lastIndexOf("."))] ?? "application/octet-stream"
+
 export const resolveKey = (pathname) => {
   const key = pathname.slice(1)
   return /\.\w+$/.test(key) ? key : INDEX_KEY
