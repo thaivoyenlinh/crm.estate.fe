@@ -1,3 +1,4 @@
+import type { AppProps } from "single-spa"
 import singleSpaCss from "single-spa-css"
 import singleSpaVue from "single-spa-vue"
 import { createApp, h } from "vue"
@@ -20,7 +21,8 @@ const vueLifecycles = singleSpaVue({
       return h(Shell)
     },
   },
-  handleInstance(app) {
+  handleInstance(app, props) {
+    app.provide("mountParcel", (props as AppProps).mountParcel)
     app.use(router)
   },
 })

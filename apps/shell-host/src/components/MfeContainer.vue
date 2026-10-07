@@ -2,62 +2,37 @@
   <div class="mfe-loading-wrapper">
     <div v-if="isLoading" class="spinner">Đang tải phân hệ...</div>
 
-    <div ref="parcelContainer"></div>
+    <Parcel
+      :key="moduleName"
+      :config="config"
+      :mount-parcel="mountParcel"
+      @parcel-error="onParcelError"
+      @parcel-mounted="isLoading = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue"
+import Parcel from "single-spa-vue/parcel"
+import { computed, inject, ref, watch } from "vue"
 import { useRoute } from "vue-router"
-import { mountRootParcel } from "single-spa"
 
 const route = useRoute()
-const parcelContainer = ref(null)
+const mountParcel = inject("mountParcel")
 const isLoading = ref(true)
-let parcelInstance = null
+const moduleName = computed(() => route.meta.moduleName)
+const config = computed(() => import(/* @vite-ignore */ moduleName.value))
 
-const loadMicroFrontend = async (moduleName) => {
-  if (parcelInstance && typeof parcelInstance.unmount === "function") {
-    await parcelInstance.unmount()
-    parcelInstance = null
-  }
-
-  if (!parcelContainer.value) return
-  isLoading.value = true
-
-  try {
-    const mfeModule = await import(/* @vite-ignore */ moduleName)
-
-    parcelInstance = mountRootParcel(mfeModule, {
-      domElement: parcelContainer.value,
-    })
-    isLoading.value = false
-  } catch (error) {
-    console.error(
-      `Không thể kích hoạt module Micro Frontend [${moduleName}]:`,
-      error,
-    )
-    isLoading.value = false
-  }
+const onParcelError = (error) => {
+  console.error(
+    `Không thể kích hoạt module Micro Frontend [${moduleName.value}]:`,
+    error,
+  )
+  isLoading.value = false
 }
 
-onMounted(() => {
-  loadMicroFrontend(route.meta.moduleName)
-})
-
-watch(
-  () => route.meta.moduleName,
-  (newModuleName) => {
-    if (newModuleName) {
-      loadMicroFrontend(newModuleName)
-    }
-  },
-)
-
-onBeforeUnmount(async () => {
-  if (parcelInstance && typeof parcelInstance.unmount === "function") {
-    await parcelInstance.unmount()
-  }
+watch(moduleName, () => {
+  isLoading.value = true
 })
 </script>
 
