@@ -1,0 +1,65 @@
+import { cpSync, existsSync, readFileSync, rmSync } from "node:fs"
+import { createServer } from "node:http"
+import { dirname, extname, resolve } from "node:path"
+
+import { MFE_MODULES } from "../mfe.config.mjs"
+import { cacheControl, resolveKey } from "./site-rules.mjs"
+
+const CONTENT_TYPES = {
+  ".css": "text/css",
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript",
+  ".json": "application/json",
+}
+const PORT = 4400
+
+const workspaceRoot = resolve(import.meta.dirname, "..")
+const siteDir = resolve(workspaceRoot, "dist/site")
+
+const assemble = () => {
+  rmSync(siteDir, { force: true, recursive: true })
+  cpSync(resolve(workspaceRoot, "apps/root-config/dist"), siteDir, {
+    recursive: true,
+  })
+
+  const { imports } = JSON.parse(
+    readFileSync(resolve(siteDir, "importmap.json"), "utf8"),
+  )
+  for (const { module } of MFE_MODULES) {
+    const name = module.replace("@recrm/", "")
+    cpSync(
+      resolve(workspaceRoot, `apps/${name}/dist`),
+      resolve(siteDir, dirname(imports[module].slice(1))),
+      { recursive: true },
+    )
+  }
+
+  const missing = Object.values(imports).filter(
+    (url) => !existsSync(resolve(siteDir, url.slice(1))),
+  )
+  if (missing.length) {
+    throw new Error(
+      `importmap.json trỏ tới file không có:\n${missing.join("\n")}`,
+    )
+  }
+}
+
+assemble()
+
+createServer((req, res) => {
+  const key = resolveKey(new URL(req.url, "http://localhost").pathname)
+  let body
+  try {
+    body = readFileSync(resolve(siteDir, key))
+  } catch {
+    res.writeHead(404).end()
+    return
+  }
+  res.writeHead(200, {
+    "Cache-Control": cacheControl(key),
+    "Content-Type": CONTENT_TYPES[extname(key)] ?? "application/octet-stream",
+  })
+  res.end(body)
+}).listen(PORT, "localhost", () => {
+  console.log(`Site ghép tại dist/site → http://localhost:${PORT}/leads`)
+})

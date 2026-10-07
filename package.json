@@ -9,7 +9,8 @@
     "dev:all": "nx run-many -t dev",
     "dev:shell": "nx dev @recrm/shell-host",
     "build:all": "nx run-many -t build",
-    "build:shell": "nx build @recrm/shell-host"
+    "build:shell": "nx build @recrm/shell-host",
+    "preview:site": "nx run-many -t build && node deploy/preview.mjs"
   },
   "dependencies": {
     "ant-design-vue": "4.2.6",
