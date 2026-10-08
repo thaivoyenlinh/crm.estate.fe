@@ -16,7 +16,7 @@ const dataSource = [
 <template>
   <div class="lead-list">
     <div class="mb-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">Danh sách Lead</h1>
+      <h1 class="text-xl font-semibold">LMS</h1>
 
       <Button type="primary">Thêm lead</Button>
     </div>
