@@ -1,0 +1,14 @@
+{
+  "name": "@recrm/styles",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.scss",
+    "./config/theme.scss": "./src/config/_theme.scss"
+  },
+  "nx": {
+    "projectType": "library",
+    "sourceRoot": "libs/styles/src"
+  }
+}

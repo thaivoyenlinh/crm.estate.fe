@@ -1,0 +1,4 @@
+@layer theme, base, components, utilities;
+
+@import "ant-design-vue/dist/reset.css" layer(base);
+@import "@recrm/styles/config/theme.scss" layer(theme) theme(static);

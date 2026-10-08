@@ -1,0 +1,18 @@
+{
+  "name": "@recrm/leads",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "projectType": "application",
+    "sourceRoot": "apps/leads/src",
+    "targets": {
+      "deploy": {
+        "command": "node deploy/deploy.mjs mfe leads"
+      }
+    }
+  },
+  "dependencies": {
+    "@recrm/styles": "workspace:*"
+  }
+}

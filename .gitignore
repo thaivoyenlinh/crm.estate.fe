@@ -22,3 +22,11 @@ pnpm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+.nx/cache
+.nx/workspace-data
+
+dist/
+.wrangler/
+.docs/
+vite.config.*.timestamp*

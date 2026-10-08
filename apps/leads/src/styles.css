@@ -1,0 +1,6 @@
+@layer theme, base, components, utilities;
+
+@import "@recrm/styles/config/theme.scss" layer(theme) theme(reference);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "./";
