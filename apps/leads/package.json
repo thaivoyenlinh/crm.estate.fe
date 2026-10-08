@@ -5,7 +5,12 @@
   "type": "module",
   "nx": {
     "projectType": "application",
-    "sourceRoot": "apps/leads/src"
+    "sourceRoot": "apps/leads/src",
+    "targets": {
+      "deploy": {
+        "command": "node deploy/deploy.mjs mfe leads"
+      }
+    }
   },
   "dependencies": {
     "@recrm/styles": "workspace:*"

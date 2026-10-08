@@ -5,7 +5,12 @@
   "type": "module",
   "nx": {
     "projectType": "application",
-    "sourceRoot": "apps/shell-host/src"
+    "sourceRoot": "apps/shell-host/src",
+    "targets": {
+      "deploy": {
+        "command": "node deploy/deploy.mjs mfe shell-host"
+      }
+    }
   },
   "dependencies": {
     "@recrm/styles": "workspace:*"

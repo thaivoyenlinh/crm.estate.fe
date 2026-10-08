@@ -5,7 +5,12 @@
   "type": "module",
   "nx": {
     "projectType": "application",
-    "sourceRoot": "apps/root-config/src"
+    "sourceRoot": "apps/root-config/src",
+    "targets": {
+      "deploy": {
+        "command": "node deploy/deploy.mjs root"
+      }
+    }
   },
   "dependencies": {
     "@recrm/styles": "workspace:*"
