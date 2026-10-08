@@ -1,18 +1,16 @@
 import { execFileSync } from "node:child_process"
-import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
-import { tmpdir } from "node:os"
+import { readdirSync, readFileSync } from "node:fs"
 import { dirname, join, relative, resolve } from "node:path"
 
 import { MFE_MODULES, SHARED_EXTERNALS, mfeUrl } from "../mfe.config.mjs"
+import { IMPORT_MAP_KEY, SHARED_KEY, pointerKey } from "./site-rules.mjs"
 
 const BINDING = "SITE"
-const IMPORT_MAP_KEY = "importmap.json"
 const LOCAL_MISSING = "Value not found\n"
 
 const args = process.argv.slice(2)
 const [command, name, version] = args.filter((arg) => !arg.startsWith("--"))
 const storage = args.includes("--local") ? "--local" : "--remote"
-const tempDir = mkdtempSync(join(tmpdir(), "deploy-"))
 const workspaceRoot = resolve(import.meta.dirname, "..")
 
 const wrangler = (wranglerArgs, stdout = "inherit") =>
@@ -35,6 +33,11 @@ const wrangler = (wranglerArgs, stdout = "inherit") =>
 const putObject = (key, file) =>
   wrangler(["kv", "key", "put", key, "--path", file])
 
+const putValue = (key, value) => {
+  wrangler(["kv", "key", "put", key, value])
+  console.log(key, "←", value)
+}
+
 // Key không có: --remote ném lỗi 404, còn --local in LOCAL_MISSING rồi exit 0
 const getObject = (key) => {
   const value = wrangler(["kv", "key", "get", key], "pipe")
@@ -48,18 +51,6 @@ const listFiles = (dir) =>
     .map((entry) =>
       relative(dir, join(entry.parentPath, entry.name)).replaceAll("\\", "/"),
     )
-
-const patchImportMap = (entries, isInit = false) => {
-  const importMap = isInit
-    ? { imports: {} }
-    : JSON.parse(getObject(IMPORT_MAP_KEY))
-  Object.assign(importMap.imports, entries)
-
-  const file = join(tempDir, IMPORT_MAP_KEY)
-  writeFileSync(file, JSON.stringify(importMap, null, 2))
-  putObject(IMPORT_MAP_KEY, file)
-  console.log("importmap.json ←", entries)
-}
 
 const mfeModule = () => {
   const module = `@recrm/${name}`
@@ -77,9 +68,14 @@ const deployRoot = () => {
   const { imports } = JSON.parse(
     readFileSync(join(dir, IMPORT_MAP_KEY), "utf8"),
   )
-  patchImportMap(
-    Object.fromEntries(SHARED_EXTERNALS.map((pkg) => [pkg, imports[pkg]])),
-    args.includes("--init"),
+  putValue(
+    SHARED_KEY,
+    JSON.stringify({
+      imports: Object.fromEntries(
+        SHARED_EXTERNALS.map((pkg) => [pkg, imports[pkg]]),
+      ),
+      modules: MFE_MODULES.map(({ module }) => module),
+    }),
   )
 }
 
@@ -96,20 +92,21 @@ const deployMfe = () => {
   for (const file of listFiles(dir)) {
     putObject(`${dirname(url).slice(1)}/${file}`, join(dir, file))
   }
-  patchImportMap({ [module]: url })
+  putValue(pointerKey(module), url)
 }
 
 const rollback = () => {
-  const url = mfeUrl(mfeModule(), version)
+  const module = mfeModule()
+  const url = mfeUrl(module, version)
   getObject(url.slice(1))
-  patchImportMap({ [`@recrm/${name}`]: url })
+  putValue(pointerKey(module), url)
 }
 
 const COMMANDS = { mfe: deployMfe, rollback, root: deployRoot }
 
 if (!COMMANDS[command] || (command === "rollback" && !version)) {
   throw new Error(
-    "Dùng: root [--init] | mfe <tên> [sha] | rollback <tên> <sha>  [--local]",
+    "Dùng: root | mfe <tên> [sha] | rollback <tên> <sha>  [--local]",
   )
 }
 COMMANDS[command]()

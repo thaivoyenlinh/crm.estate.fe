@@ -15,8 +15,7 @@
       "outputs": ["{projectRoot}/dist"]
     },
     "deploy": {
-      "dependsOn": ["build"],
-      "parallelism": false
+      "dependsOn": ["build"]
     },
     "preview": {
       "cache": false,

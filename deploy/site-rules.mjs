@@ -2,6 +2,12 @@ const IMMUTABLE = "public, max-age=31536000, immutable"
 const IMMUTABLE_PREFIXES = ["assets/", "mfe/", "vendor/"]
 const INDEX_KEY = "index.html"
 const NO_CACHE = "no-cache"
+const POINTER_PREFIX = "importmap/"
+
+export const IMPORT_MAP_KEY = "importmap.json"
+export const SHARED_KEY = `${POINTER_PREFIX}shared`
+
+export const pointerKey = (module) => `${POINTER_PREFIX}${module}`
 
 const CONTENT_TYPES = {
   ".css": "text/css",
