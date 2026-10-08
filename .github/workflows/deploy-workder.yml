@@ -3,7 +3,7 @@ name: Deploy Worker
 on:
   push:
     branches: [release/dev]
-    paths: [deploy/worker.mjs, wrangler.jsonc]
+    paths: [deploy/site-rules.mjs, deploy/worker.mjs, wrangler.jsonc]
 
 concurrency: { group: worker, queue: max }
 
