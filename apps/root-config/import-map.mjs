@@ -8,8 +8,17 @@ const LOCAL_VERSION = "local"
 
 const nodeModules = resolve(import.meta.dirname, "../../node_modules")
 
-const vendorFiles = (isBuild) =>
-  SHARED_RUNTIME.map(({ devFile, file, pkg }) => {
+// overrides phải chạy trước injector — https://github.com/single-spa/import-map-injector#compatibility
+const BOOT_PACKAGES = [
+  { file: "dist/import-map-overrides.js", pkg: "import-map-overrides" },
+  {
+    file: "lib/import-map-injector.js",
+    pkg: "@single-spa/import-map-injector",
+  },
+]
+
+const vendorFiles = (isBuild, packages = SHARED_RUNTIME) =>
+  packages.map(({ devFile, file, pkg }) => {
     const pkgDir = resolve(nodeModules, pkg)
     const { version } = JSON.parse(
       readFileSync(resolve(pkgDir, "package.json"), "utf8"),
@@ -76,15 +85,8 @@ export const viteImportMap = () => ({
 })
 
 const bootstrapScript = (entry) => `
-fetch("/${IMPORT_MAP_FILE}", { cache: "no-cache" })
-  .then((response) => response.json())
-  .then((importMap) => {
-    const script = document.createElement("script")
-    script.type = "importmap"
-    script.textContent = JSON.stringify(importMap)
-    document.head.append(script)
-    return import("${entry}")
-  })
+importMapInjector.initPromise
+  .then(() => import("${entry}"))
   .catch((error) => console.error("Không tải được import map:", error))
 `
 
@@ -95,7 +97,10 @@ export const viteImportMapFile = () => ({
   generateBundle() {
     const vendor = vendorFiles(true)
 
-    for (const { source, url } of vendor) {
+    for (const { source, url } of [
+      ...vendor,
+      ...vendorFiles(true, BOOT_PACKAGES),
+    ]) {
       this.emitFile({
         type: "asset",
         fileName: url.slice(1),
@@ -124,7 +129,27 @@ export const viteImportMapFile = () => ({
           "",
         ),
         tags: [
+          {
+            tag: "meta",
+            attrs: { name: "importmap-type", "use-injector": true },
+            injectTo: "head",
+          },
+          {
+            tag: "script",
+            attrs: { src: `/${IMPORT_MAP_FILE}`, type: "injector-importmap" },
+            injectTo: "head",
+          },
+          ...vendorFiles(true, BOOT_PACKAGES).map(({ url }) => ({
+            tag: "script",
+            attrs: { src: url },
+            injectTo: "head",
+          })),
           { tag: "script", children: bootstrapScript(entry), injectTo: "head" },
+          {
+            tag: "import-map-overrides-full",
+            attrs: { "show-when-local-storage": "overrides-ui" },
+            injectTo: "body",
+          },
         ],
       }
     },
