@@ -17,7 +17,10 @@ const CONTENT_TYPES = {
 }
 
 export const contentType = (key) =>
-  CONTENT_TYPES[key.slice(key.lastIndexOf("."))] ?? "application/octet-stream"
+  key === IMPORT_MAP_KEY
+    ? "application/importmap+json"
+    : (CONTENT_TYPES[key.slice(key.lastIndexOf("."))] ??
+      "application/octet-stream")
 
 export const resolveKey = (pathname) => {
   const key = pathname.slice(1)

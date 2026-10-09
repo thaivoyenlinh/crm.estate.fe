@@ -24,7 +24,12 @@ const importMap = async (env) => {
 
   return Response.json(
     { imports: { ...Object.fromEntries(pointers), ...shared.imports } },
-    { headers: { "Cache-Control": cacheControl(IMPORT_MAP_KEY) } },
+    {
+      headers: {
+        "Cache-Control": cacheControl(IMPORT_MAP_KEY),
+        "Content-Type": contentType(IMPORT_MAP_KEY),
+      },
+    },
   )
 }
 
