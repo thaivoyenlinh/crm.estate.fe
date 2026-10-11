@@ -4,3 +4,25 @@
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "./";
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr;
+  min-height: 100vh;
+}
+
+.app-layout__shell,
+.app-layout__shell > .single-spa-container {
+  display: contents;
+}
+
+.app-layout__content {
+  padding: 20px;
+}
+
+.mfe-loading {
+  color: #666;
+  font-style: italic;
+  padding: 15px;
+}

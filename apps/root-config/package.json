@@ -13,6 +13,7 @@
     }
   },
   "dependencies": {
-    "@recrm/styles": "workspace:*"
+    "@recrm/styles": "workspace:*",
+    "single-spa-layout": "^3.0.0"
   }
 }

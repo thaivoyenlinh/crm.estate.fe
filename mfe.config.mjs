@@ -28,38 +28,37 @@ export const mfeUrl = (module, version) => {
 
 const VALID_ID_PREFIX = "/@id/"
 
-export const viteSharedExternals = (extraKeys = []) => {
-  const keys = [...SHARED_EXTERNALS, ...extraKeys]
+export const viteSharedExternals = () => ({
+  name: "vite-plugin-shared-externals",
+  enforce: "pre",
+  apply: "serve",
 
-  return {
-    name: "vite-plugin-shared-externals",
-    enforce: "pre",
-    apply: "serve",
+  resolveId(id) {
+    if (SHARED_EXTERNALS.includes(id)) {
+      return { id, external: true }
+    }
+    return null
+  },
 
-    resolveId(id) {
-      if (keys.includes(id)) {
-        return { id, external: true }
-      }
-      return null
-    },
+  config() {
+    return { optimizeDeps: { exclude: SHARED_EXTERNALS } }
+  },
 
-    config() {
-      return { optimizeDeps: { exclude: keys } }
-    },
+  configResolved(config) {
+    const pattern = new RegExp(
+      `${VALID_ID_PREFIX}(${SHARED_EXTERNALS.join("|")})`,
+      "g",
+    )
 
-    configResolved(config) {
-      const pattern = new RegExp(`${VALID_ID_PREFIX}(${keys.join("|")})`, "g")
-
-      config.plugins.push({
-        name: "vite-plugin-shared-externals-strip-id-prefix",
-        transform(code) {
-          if (!code.includes(VALID_ID_PREFIX)) return null
-          return { code: code.replace(pattern, "$1"), map: null }
-        },
-      })
-    },
-  }
-}
+    config.plugins.push({
+      name: "vite-plugin-shared-externals-strip-id-prefix",
+      transform(code) {
+        if (!code.includes(VALID_ID_PREFIX)) return null
+        return { code: code.replace(pattern, "$1"), map: null }
+      },
+    })
+  },
+})
 
 /** @returns {import("vite").UserConfig} */
 export const mfeViteConfig = (appDir) => {
@@ -81,7 +80,6 @@ export const mfeViteConfig = (appDir) => {
     cacheDir: `../../node_modules/.vite/apps/${name}`,
     plugins: [tailwindcss(), vue(), viteSharedExternals()],
     preview: { cors: true, host: "localhost", port: port + 100 },
-    resolve: { tsconfigPaths: true },
     root: appDir,
     server: {
       cors: true,

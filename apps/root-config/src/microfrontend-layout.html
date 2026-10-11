@@ -1,0 +1,18 @@
+<single-spa-router>
+  <route path="auth"></route>
+
+  <route default>
+    <div class="app-layout">
+      <application
+        name="@recrm/shell-host"
+        class="app-layout__shell"
+      ></application>
+
+      <main class="app-layout__content">
+        <route path="leads">
+          <application name="@recrm/leads" loader="mfe"></application>
+        </route>
+      </main>
+    </div>
+  </route>
+</single-spa-router>

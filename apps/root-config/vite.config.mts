@@ -1,14 +1,8 @@
 import { defineConfig, type UserConfig } from "vite"
 import tailwindcss from "@tailwindcss/vite"
 
-import {
-  MFE_MODULES,
-  SHARED_EXTERNALS,
-  viteSharedExternals,
-} from "../../mfe.config.mjs"
+import { SHARED_EXTERNALS, viteSharedExternals } from "../../mfe.config.mjs"
 import { viteImportMap, viteImportMapFile } from "./import-map.mjs"
-
-const mfeModules = MFE_MODULES.map(({ module }) => module)
 
 export default defineConfig(
   (): UserConfig => ({
@@ -25,7 +19,7 @@ export default defineConfig(
     },
     plugins: [
       tailwindcss(),
-      viteSharedExternals(mfeModules),
+      viteSharedExternals(),
       viteImportMap(),
       viteImportMapFile(),
     ],
@@ -34,7 +28,7 @@ export default defineConfig(
       outDir: "dist",
       emptyOutDir: true,
       rolldownOptions: {
-        external: [...mfeModules, ...SHARED_EXTERNALS],
+        external: SHARED_EXTERNALS,
       },
       modulePreload: {
         polyfill: false,
