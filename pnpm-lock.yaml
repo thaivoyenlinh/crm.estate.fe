@@ -194,9 +194,6 @@ importers:
 
   apps/root-config:
     dependencies:
-      '@recrm/styles':
-        specifier: workspace:*
-        version: link:../../libs/styles
       single-spa-layout:
         specifier: ^3.0.0
         version: 3.0.0
