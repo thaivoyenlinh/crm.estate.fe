@@ -30,8 +30,7 @@ const wrangler = (wranglerArgs, stdout = "inherit") =>
     },
   )
 
-const putObject = (key, file) =>
-  wrangler(["kv", "key", "put", key, "--path", file])
+const putObject = (key, file) => wrangler(["kv", "key", "put", key, "--path", file])
 
 const putValue = (key, value) => {
   wrangler(["kv", "key", "put", key, value])
@@ -48,9 +47,7 @@ const getObject = (key) => {
 const listFiles = (dir) =>
   readdirSync(dir, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile())
-    .map((entry) =>
-      relative(dir, join(entry.parentPath, entry.name)).replaceAll("\\", "/"),
-    )
+    .map((entry) => relative(dir, join(entry.parentPath, entry.name)).replaceAll("\\", "/"))
 
 const mfeModule = () => {
   const module = `@recrm/${name}`
@@ -60,20 +57,14 @@ const mfeModule = () => {
 
 const deployRoot = () => {
   const dir = resolve(workspaceRoot, "apps/root-config/dist")
-  const assets = listFiles(dir).filter(
-    (file) => file !== IMPORT_MAP_KEY && file !== "index.html",
-  )
+  const assets = listFiles(dir).filter((file) => file !== IMPORT_MAP_KEY && file !== "index.html")
   for (const file of [...assets, "index.html"]) putObject(file, join(dir, file))
 
-  const { imports } = JSON.parse(
-    readFileSync(join(dir, IMPORT_MAP_KEY), "utf8"),
-  )
+  const { imports } = JSON.parse(readFileSync(join(dir, IMPORT_MAP_KEY), "utf8"))
   putValue(
     SHARED_KEY,
     JSON.stringify({
-      imports: Object.fromEntries(
-        SHARED_EXTERNALS.map((pkg) => [pkg, imports[pkg]]),
-      ),
+      imports: Object.fromEntries(SHARED_EXTERNALS.map((pkg) => [pkg, imports[pkg]])),
       modules: MFE_MODULES.map(({ module }) => module),
     }),
   )
@@ -105,8 +96,6 @@ const rollback = () => {
 const COMMANDS = { mfe: deployMfe, rollback, root: deployRoot }
 
 if (!COMMANDS[command] || (command === "rollback" && !version)) {
-  throw new Error(
-    "Dùng: root | mfe <tên> [sha] | rollback <tên> <sha>  [--local]",
-  )
+  throw new Error("Dùng: root | mfe <tên> [sha] | rollback <tên> <sha>  [--local]")
 }
 COMMANDS[command]()

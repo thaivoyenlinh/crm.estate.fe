@@ -17,12 +17,7 @@ export default defineConfig(
       port: 4300,
       host: "localhost",
     },
-    plugins: [
-      tailwindcss(),
-      viteSharedExternals(),
-      viteImportMap(),
-      viteImportMapFile(),
-    ],
+    plugins: [tailwindcss(), viteSharedExternals(), viteImportMap(), viteImportMapFile()],
 
     build: {
       outDir: "dist",

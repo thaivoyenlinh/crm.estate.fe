@@ -1,9 +1,5 @@
 import { registerApplication, start } from "single-spa"
-import {
-  constructApplications,
-  constructLayoutEngine,
-  constructRoutes,
-} from "single-spa-layout"
+import { constructApplications, constructLayoutEngine, constructRoutes } from "single-spa-layout"
 
 import layout from "./microfrontend-layout.html?raw"
 import "./styles.css"

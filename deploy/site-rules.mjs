@@ -19,8 +19,7 @@ const CONTENT_TYPES = {
 export const contentType = (key) =>
   key === IMPORT_MAP_KEY
     ? "application/importmap+json"
-    : (CONTENT_TYPES[key.slice(key.lastIndexOf("."))] ??
-      "application/octet-stream")
+    : (CONTENT_TYPES[key.slice(key.lastIndexOf("."))] ?? "application/octet-stream")
 
 export const resolveKey = (pathname) => {
   const key = pathname.slice(1)
@@ -28,6 +27,4 @@ export const resolveKey = (pathname) => {
 }
 
 export const cacheControl = (key) =>
-  IMMUTABLE_PREFIXES.some((prefix) => key.startsWith(prefix))
-    ? IMMUTABLE
-    : NO_CACHE
+  IMMUTABLE_PREFIXES.some((prefix) => key.startsWith(prefix)) ? IMMUTABLE : NO_CACHE

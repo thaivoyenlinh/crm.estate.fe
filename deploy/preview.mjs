@@ -16,9 +16,7 @@ const assemble = () => {
     recursive: true,
   })
 
-  const { imports } = JSON.parse(
-    readFileSync(resolve(siteDir, "importmap.json"), "utf8"),
-  )
+  const { imports } = JSON.parse(readFileSync(resolve(siteDir, "importmap.json"), "utf8"))
   for (const { module } of MFE_MODULES) {
     const name = module.replace("@recrm/", "")
     cpSync(
@@ -32,9 +30,7 @@ const assemble = () => {
     (url) => !existsSync(resolve(siteDir, url.slice(1))),
   )
   if (missing.length) {
-    throw new Error(
-      `importmap.json trỏ tới file không có:\n${missing.join("\n")}`,
-    )
+    throw new Error(`importmap.json trỏ tới file không có:\n${missing.join("\n")}`)
   }
 }
 

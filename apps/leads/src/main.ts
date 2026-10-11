@@ -8,9 +8,7 @@ import App from "./Leads.vue"
 import router from "./router/index.js"
 
 const cssLifecycles = singleSpaCss({
-  cssUrls: import.meta.env.DEV
-    ? []
-    : [import.meta.url.replace(/\.js$/, ".css")],
+  cssUrls: import.meta.env.DEV ? [] : [import.meta.url.replace(/\.js$/, ".css")],
 })
 
 const vueLifecycles = singleSpaVue({

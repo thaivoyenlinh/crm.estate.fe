@@ -7,9 +7,7 @@ import "./styles.css"
 import Shell from "./Shell.vue"
 
 const cssLifecycles = singleSpaCss({
-  cssUrls: import.meta.env.DEV
-    ? []
-    : [import.meta.url.replace(/\.js$/, ".css")],
+  cssUrls: import.meta.env.DEV ? [] : [import.meta.url.replace(/\.js$/, ".css")],
 })
 
 const vueLifecycles = singleSpaVue({

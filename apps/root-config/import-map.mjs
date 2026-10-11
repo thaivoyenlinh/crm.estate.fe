@@ -20,9 +20,7 @@ const BOOT_PACKAGES = [
 const vendorFiles = (isBuild, packages = SHARED_RUNTIME) =>
   packages.map(({ devFile, file, pkg }) => {
     const pkgDir = resolve(nodeModules, pkg)
-    const { version } = JSON.parse(
-      readFileSync(resolve(pkgDir, "package.json"), "utf8"),
-    )
+    const { version } = JSON.parse(readFileSync(resolve(pkgDir, "package.json"), "utf8"))
     const source = resolve(pkgDir, isBuild ? file : (devFile ?? file))
 
     return { pkg, source, url: `/vendor/${pkg}@${version}/${basename(source)}` }
@@ -33,9 +31,7 @@ const buildImportMap = (isBuild, vendor) => ({
     ...Object.fromEntries(
       MFE_MODULES.map(({ module, port }) => [
         module,
-        isBuild
-          ? mfeUrl(module, LOCAL_VERSION)
-          : `http://localhost:${port}/src/main.ts`,
+        isBuild ? mfeUrl(module, LOCAL_VERSION) : `http://localhost:${port}/src/main.ts`,
       ]),
     ),
     ...Object.fromEntries(vendor.map(({ pkg, url }) => [pkg, url])),
@@ -47,9 +43,7 @@ export const viteImportMap = () => ({
   apply: "serve",
 
   configureServer(server) {
-    const sources = new Map(
-      vendorFiles(false).map(({ source, url }) => [url, source]),
-    )
+    const sources = new Map(vendorFiles(false).map(({ source, url }) => [url, source]))
 
     server.middlewares.use((req, res, next) => {
       const source = sources.get(req.url)
@@ -72,11 +66,7 @@ export const viteImportMap = () => ({
         {
           tag: "script",
           attrs: { type: "importmap" },
-          children: JSON.stringify(
-            buildImportMap(false, vendorFiles(false)),
-            null,
-            2,
-          ),
+          children: JSON.stringify(buildImportMap(false, vendorFiles(false)), null, 2),
           injectTo: "head-prepend",
         },
       ]
@@ -97,10 +87,7 @@ export const viteImportMapFile = () => ({
   generateBundle() {
     const vendor = vendorFiles(true)
 
-    for (const { source, url } of [
-      ...vendor,
-      ...vendorFiles(true, BOOT_PACKAGES),
-    ]) {
+    for (const { source, url } of [...vendor, ...vendorFiles(true, BOOT_PACKAGES)]) {
       this.emitFile({
         type: "asset",
         fileName: url.slice(1),
@@ -123,9 +110,7 @@ export const viteImportMapFile = () => ({
 
       return {
         html: html.replace(
-          new RegExp(
-            `<script type="module"[^>]*src="${entry}"[^>]*></script>\\s*`,
-          ),
+          new RegExp(`<script type="module"[^>]*src="${entry}"[^>]*></script>\\s*`),
           "",
         ),
         tags: [

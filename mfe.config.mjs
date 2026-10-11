@@ -45,10 +45,7 @@ export const viteSharedExternals = () => ({
   },
 
   configResolved(config) {
-    const pattern = new RegExp(
-      `${VALID_ID_PREFIX}(${SHARED_EXTERNALS.join("|")})`,
-      "g",
-    )
+    const pattern = new RegExp(`${VALID_ID_PREFIX}(${SHARED_EXTERNALS.join("|")})`, "g")
 
     config.plugins.push({
       name: "vite-plugin-shared-externals-strip-id-prefix",

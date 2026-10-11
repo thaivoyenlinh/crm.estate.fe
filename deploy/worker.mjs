@@ -15,9 +15,7 @@ const importMap = async (env) => {
     return new Response(null, { status: 404 })
   }
 
-  const urls = await Promise.all(
-    shared.modules.map((module) => env.SITE.get(pointerKey(module))),
-  )
+  const urls = await Promise.all(shared.modules.map((module) => env.SITE.get(pointerKey(module))))
   const pointers = shared.modules
     .map((module, index) => [module, urls[index]])
     .filter(([, url]) => url)
