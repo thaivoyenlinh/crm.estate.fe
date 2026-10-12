@@ -3,7 +3,7 @@ import vue from "@vitejs/plugin-vue"
 import { basename } from "node:path"
 
 export const MFE_MODULES = [
-  { module: "@recrm/shell-host", port: 4201 },
+  { module: "@recrm/navbar", port: 4201 },
   { module: "@recrm/leads", port: 4202 },
 ]
 

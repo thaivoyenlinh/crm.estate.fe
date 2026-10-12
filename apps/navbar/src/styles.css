@@ -12,8 +12,8 @@
   min-height: 100vh;
 }
 
-.app-layout__shell,
-.app-layout__shell > .single-spa-container {
+.app-layout__nav,
+.app-layout__nav > .single-spa-container {
   display: contents;
 }
 

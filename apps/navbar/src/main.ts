@@ -4,7 +4,7 @@ import { createApp, h } from "vue"
 
 import "./styles.css"
 
-import Shell from "./Shell.vue"
+import Navbar from "./Navbar.vue"
 
 const cssLifecycles = singleSpaCss({
   cssUrls: import.meta.env.DEV ? [] : [import.meta.url.replace(/\.js$/, ".css")],
@@ -14,7 +14,7 @@ const vueLifecycles = singleSpaVue({
   createApp,
   appOptions: {
     render() {
-      return h(Shell)
+      return h(Navbar)
     },
   },
 })

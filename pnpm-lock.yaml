@@ -192,17 +192,17 @@ importers:
         specifier: workspace:*
         version: link:../../libs/styles
 
+  apps/navbar:
+    dependencies:
+      '@recrm/styles':
+        specifier: workspace:*
+        version: link:../../libs/styles
+
   apps/root-config:
     dependencies:
       single-spa-layout:
         specifier: ^3.0.0
         version: 3.0.0
-
-  apps/shell-host:
-    dependencies:
-      '@recrm/styles':
-        specifier: workspace:*
-        version: link:../../libs/styles
 
   libs/styles: {}
 

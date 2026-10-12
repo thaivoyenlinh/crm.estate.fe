@@ -23,7 +23,7 @@ and each shared library lives.
 crm.estate.fe/
 ├── apps/
 │   ├── root-config/   # the page the browser opens: import map, page layout, single-spa start
-│   ├── shell-host/    # header, sidebar and the page-layout CSS
+│   ├── navbar/        # header, sidebar and the page-layout CSS
 │   └── leads/         # first child app
 ├── libs/
 │   └── styles/        # @recrm/styles — shared theme variables
@@ -45,7 +45,7 @@ crm.estate.fe/
 - **`microfrontend-layout.html`** (`apps/root-config/src`) is the single-spa-layout template:
   it places each app on the page and decides which routes mount it. root-config registers
   every app from it.
-- **Child apps** (`shell-host`, `leads`) are libraries, not pages: their entry exports
+- **Child apps** (`navbar`, `leads`) are libraries, not pages: their entry exports
   single-spa lifecycles. Each `vite.config.mts` is one call to `mfeViteConfig`, which derives
   ports and output file names from the folder name.
 
@@ -62,18 +62,18 @@ addresses each app by port:
 | App         | Dev  | Preview |
 | ----------- | ---- | ------- |
 | root-config | 4200 | 4300    |
-| shell-host  | 4201 | 4301    |
+| navbar      | 4201 | 4301    |
 | leads       | 4202 | 4302    |
 
 ## Scripts
 
-| Script             | What it does                                         |
-| ------------------ | ---------------------------------------------------- |
-| `pnpm dev:all`     | Starts every app's dev server.                       |
-| `pnpm build:all`   | Builds every app into `apps/<app>/dist`.             |
-| `pnpm dev:shell`   | Starts only the shell (useless without root-config). |
-| `pnpm build:shell` | Builds only the shell.                               |
-| `pnpm graph`       | Opens the Nx project graph.                          |
+| Script              | What it does                                          |
+| ------------------- | ----------------------------------------------------- |
+| `pnpm dev:all`      | Starts every app's dev server.                        |
+| `pnpm build:all`    | Builds every app into `apps/<app>/dist`.              |
+| `pnpm dev:navbar`   | Starts only the navbar (useless without root-config). |
+| `pnpm build:navbar` | Builds only the navbar.                               |
+| `pnpm graph`        | Opens the Nx project graph.                           |
 
 Type-check with `pnpm exec nx run-many -t typecheck`.
 

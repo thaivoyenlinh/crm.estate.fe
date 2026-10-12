@@ -7,9 +7,9 @@
   "scripts": {
     "graph": "nx graph",
     "dev:all": "nx run-many -t dev",
-    "dev:shell": "nx dev @recrm/shell-host",
+    "dev:navbar": "nx dev @recrm/navbar",
     "build:all": "nx run-many -t build",
-    "build:shell": "nx build @recrm/shell-host",
+    "build:navbar": "nx build @recrm/navbar",
     "preview:site": "nx run-many -t build && node deploy/preview.mjs",
     "deploy:site": "node deploy/deploy.mjs"
   },

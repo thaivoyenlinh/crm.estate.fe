@@ -1,14 +1,14 @@
 {
-  "name": "@recrm/shell-host",
+  "name": "@recrm/navbar",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "nx": {
     "projectType": "application",
-    "sourceRoot": "apps/shell-host/src",
+    "sourceRoot": "apps/navbar/src",
     "targets": {
       "deploy": {
-        "command": "node deploy/deploy.mjs mfe shell-host"
+        "command": "node deploy/deploy.mjs mfe navbar"
       }
     }
   },
