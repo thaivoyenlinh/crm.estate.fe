@@ -22,8 +22,8 @@ and each shared library lives.
 ```
 crm.estate.fe/
 ├── apps/
-│   ├── root-config/   # the page the browser opens: import map + single-spa start
-│   ├── shell-host/    # layout (header, sidebar) and the router that mounts child apps
+│   ├── root-config/   # the page the browser opens: import map, page layout, single-spa start
+│   ├── shell-host/    # header, sidebar and the page-layout CSS
 │   └── leads/         # first child app
 ├── libs/
 │   └── styles/        # @recrm/styles — shared theme variables
@@ -42,6 +42,9 @@ crm.estate.fe/
 - **`SHARED_RUNTIME`** lists the libraries every app shares — Vue, vue-router, single-spa,
   ant-design-vue. Apps keep them external; root-config serves them from `node_modules` in dev
   and writes them to `dist/vendor/<pkg>@<version>/` in a build, together with `importmap.json`.
+- **`microfrontend-layout.html`** (`apps/root-config/src`) is the single-spa-layout template:
+  it places each app on the page and decides which routes mount it. root-config registers
+  every app from it.
 - **Child apps** (`shell-host`, `leads`) are libraries, not pages: their entry exports
   single-spa lifecycles. Each `vite.config.mts` is one call to `mfeViteConfig`, which derives
   ports and output file names from the folder name.
@@ -81,7 +84,8 @@ Type-check with `pnpm exec nx run-many -t typecheck`.
 2. Add `vite.config.mts`: `export default defineConfig(mfeViteConfig(import.meta.dirname))`.
 3. Export single-spa lifecycles from `src/main.ts` (copy `apps/leads`).
 4. Add `{ module: "@recrm/<name>", port: <next port> }` to `MFE_MODULES`.
-5. Add a route entry to `MFE_APPS` in `apps/shell-host/src/constants/mfe.ts`.
+5. Add a `<route>` with an `<application name="@recrm/<name>">` to
+   `apps/root-config/src/microfrontend-layout.html` — write the closing tag, never `<application />`.
 
 ## Nx caching
 
