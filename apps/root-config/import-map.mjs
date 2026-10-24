@@ -8,7 +8,7 @@ const LOCAL_VERSION = "local"
 
 const nodeModules = resolve(import.meta.dirname, "../../node_modules")
 
-// overrides phải chạy trước injector — https://github.com/single-spa/import-map-injector#compatibility
+// overrides must run before the injector — https://github.com/single-spa/import-map-injector#compatibility
 const BOOT_PACKAGES = [
   { file: "dist/import-map-overrides.js", pkg: "import-map-overrides" },
   {
@@ -77,7 +77,7 @@ export const viteImportMap = () => ({
 const bootstrapScript = (entry) => `
 importMapInjector.initPromise
   .then(() => import("${entry}"))
-  .catch((error) => console.error("Không tải được import map:", error))
+  .catch((error) => console.error("Failed to load the import map:", error))
 `
 
 export const viteImportMapFile = () => ({

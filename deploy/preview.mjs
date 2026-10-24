@@ -29,7 +29,7 @@ const assemble = () => {
     (url) => !existsSync(resolve(siteDir, url.slice(1))),
   )
   if (missing.length) {
-    throw new Error(`importmap.json trỏ tới file không có:\n${missing.join("\n")}`)
+    throw new Error(`importmap.json points to missing files:\n${missing.join("\n")}`)
   }
 }
 
@@ -50,5 +50,5 @@ createServer((req, res) => {
   })
   res.end(body)
 }).listen(PORT, "localhost", () => {
-  console.log(`Site ghép tại dist/site → http://localhost:${PORT}/leads`)
+  console.log(`Site assembled in dist/site → http://localhost:${PORT}/leads`)
 })

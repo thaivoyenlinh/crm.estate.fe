@@ -7,7 +7,7 @@ import {
   resolveKey,
 } from "./site-rules.mjs"
 
-// Mỗi key chỉ một người ghi (root ghi shared, mỗi MFE ghi con trỏ của nó) nên không deploy nào đè được deploy khác
+// Each key has a single writer (root writes shared, each MFE writes its own pointer), so no deploy can overwrite another
 const importMap = async (env) => {
   const shared = await env.SITE.get(SHARED_KEY, "json")
 

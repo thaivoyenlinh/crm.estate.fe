@@ -37,10 +37,10 @@ const putValue = (key, value) => {
   console.log(key, "←", value)
 }
 
-// Key không có: --remote ném lỗi 404, còn --local in LOCAL_MISSING rồi exit 0
+// Missing key: --remote throws a 404, while --local prints LOCAL_MISSING and exits 0
 const getObject = (key) => {
   const value = wrangler(["kv", "key", "get", key], "pipe")
-  if (value === LOCAL_MISSING) throw new Error(`Không có "${key}" trên KV`)
+  if (value === LOCAL_MISSING) throw new Error(`"${key}" not found in KV`)
   return value
 }
 
@@ -53,7 +53,7 @@ const findMfe = () => {
   const module = `@recrm/${name}`
   const mfe = MFE_MODULES.find((entry) => entry.module === module)
   if (mfe) return mfe
-  throw new Error(`Không có MFE "${name}" trong MFE_MODULES`)
+  throw new Error(`Cannot find MFE "${name}" in MFE_MODULES`)
 }
 
 const deployRoot = () => {
@@ -97,6 +97,6 @@ const rollback = () => {
 const COMMANDS = { mfe: deployMfe, rollback, root: deployRoot }
 
 if (!COMMANDS[command] || (command === "rollback" && !version)) {
-  throw new Error("Dùng: root | mfe <tên> [sha] | rollback <tên> <sha>  [--local]")
+  throw new Error("Use: root | mfe <name> [sha] | rollback <name> <sha>  [--local]")
 }
 COMMANDS[command]()
