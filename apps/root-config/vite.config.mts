@@ -1,6 +1,6 @@
 import { defineConfig, type UserConfig } from "vite"
 
-import { SHARED_EXTERNALS, viteSharedExternals } from "../../mfe.config.mjs"
+import { RUNTIME_EXTERNALS, viteSharedExternals } from "../../mfe.config.mjs"
 import { viteImportMap, viteImportMapFile } from "./import-map.mjs"
 
 export default defineConfig(
@@ -22,7 +22,7 @@ export default defineConfig(
       outDir: "dist",
       emptyOutDir: true,
       rolldownOptions: {
-        external: SHARED_EXTERNALS,
+        external: RUNTIME_EXTERNALS,
       },
       modulePreload: {
         polyfill: false,

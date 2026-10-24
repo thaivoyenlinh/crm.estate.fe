@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process"
 import { readdirSync, readFileSync } from "node:fs"
 import { dirname, join, relative, resolve } from "node:path"
 
-import { MFE_MODULES, SHARED_EXTERNALS, mfeUrl } from "../mfe.config.mjs"
+import { MFE_MODULES, SHARED_EXTERNALS, mfeDir, mfeUrl } from "../mfe.config.mjs"
 import { IMPORT_MAP_KEY, SHARED_KEY, pointerKey } from "./site-rules.mjs"
 
 const BINDING = "SITE"
@@ -49,9 +49,10 @@ const listFiles = (dir) =>
     .filter((entry) => entry.isFile())
     .map((entry) => relative(dir, join(entry.parentPath, entry.name)).replaceAll("\\", "/"))
 
-const mfeModule = () => {
+const findMfe = () => {
   const module = `@recrm/${name}`
-  if (MFE_MODULES.some((mfe) => mfe.module === module)) return module
+  const mfe = MFE_MODULES.find((entry) => entry.module === module)
+  if (mfe) return mfe
   throw new Error(`Không có MFE "${name}" trong MFE_MODULES`)
 }
 
@@ -71,23 +72,23 @@ const deployRoot = () => {
 }
 
 const deployMfe = () => {
-  const module = mfeModule()
+  const mfe = findMfe()
   const sha =
     version ??
     execFileSync("git", ["rev-parse", "--short=12", "HEAD"], {
       encoding: "utf8",
     }).trim()
-  const dir = resolve(workspaceRoot, `apps/${name}/dist`)
-  const url = mfeUrl(module, sha)
+  const dir = resolve(workspaceRoot, mfeDir(mfe), "dist")
+  const url = mfeUrl(mfe.module, sha)
 
   for (const file of listFiles(dir)) {
     putObject(`${dirname(url).slice(1)}/${file}`, join(dir, file))
   }
-  putValue(pointerKey(module), url)
+  putValue(pointerKey(mfe.module), url)
 }
 
 const rollback = () => {
-  const module = mfeModule()
+  const module = findMfe().module
   const url = mfeUrl(module, version)
   getObject(url.slice(1))
   putValue(pointerKey(module), url)

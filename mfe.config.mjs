@@ -5,7 +5,10 @@ import { basename } from "node:path"
 export const MFE_MODULES = [
   { module: "@recrm/navbar", port: 4201 },
   { module: "@recrm/leads", port: 4202 },
+  { module: "@recrm/auth", port: 4203, dir: "libs/auth" },
 ]
+
+const UTILITY_MODULES = ["@recrm/auth"]
 
 export const SHARED_RUNTIME = [
   { file: "dist/antd.esm.min.js", pkg: "ant-design-vue" },
@@ -21,9 +24,15 @@ export const SHARED_RUNTIME = [
 
 export const SHARED_EXTERNALS = SHARED_RUNTIME.map(({ pkg }) => pkg)
 
+export const RUNTIME_EXTERNALS = [...SHARED_EXTERNALS, ...UTILITY_MODULES]
+
 export const mfeUrl = (module, version) => {
   const name = module.replace("@recrm/", "")
   return `/mfe/${name}/${version}/${name}.js`
+}
+
+export const mfeDir = ({ dir, module }) => {
+  return dir ?? `apps/${module.replace("@recrm/", "")}`
 }
 
 const VALID_ID_PREFIX = "/@id/"
@@ -34,18 +43,18 @@ export const viteSharedExternals = () => ({
   apply: "serve",
 
   resolveId(id) {
-    if (SHARED_EXTERNALS.includes(id)) {
+    if (RUNTIME_EXTERNALS.includes(id)) {
       return { id, external: true }
     }
     return null
   },
 
   config() {
-    return { optimizeDeps: { exclude: SHARED_EXTERNALS } }
+    return { optimizeDeps: { exclude: RUNTIME_EXTERNALS } }
   },
 
   configResolved(config) {
-    const pattern = new RegExp(`${VALID_ID_PREFIX}(${SHARED_EXTERNALS.join("|")})`, "g")
+    const pattern = new RegExp(`${VALID_ID_PREFIX}(${RUNTIME_EXTERNALS.join("|")})`, "g")
 
     config.plugins.push({
       name: "vite-plugin-shared-externals-strip-id-prefix",
@@ -72,7 +81,7 @@ export const mfeViteConfig = (appDir) => {
         formats: ["es"],
       },
       outDir: "dist",
-      rolldownOptions: { external: SHARED_EXTERNALS },
+      rolldownOptions: { external: RUNTIME_EXTERNALS },
     },
     cacheDir: `../../node_modules/.vite/apps/${name}`,
     plugins: [tailwindcss(), vue(), viteSharedExternals()],

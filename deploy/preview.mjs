@@ -2,7 +2,7 @@ import { cpSync, existsSync, readFileSync, rmSync } from "node:fs"
 import { createServer } from "node:http"
 import { dirname, resolve } from "node:path"
 
-import { MFE_MODULES } from "../mfe.config.mjs"
+import { MFE_MODULES, mfeDir } from "../mfe.config.mjs"
 import { cacheControl, contentType, resolveKey } from "./site-rules.mjs"
 
 const PORT = 4400
@@ -17,11 +17,10 @@ const assemble = () => {
   })
 
   const { imports } = JSON.parse(readFileSync(resolve(siteDir, "importmap.json"), "utf8"))
-  for (const { module } of MFE_MODULES) {
-    const name = module.replace("@recrm/", "")
+  for (const mfe of MFE_MODULES) {
     cpSync(
-      resolve(workspaceRoot, `apps/${name}/dist`),
-      resolve(siteDir, dirname(imports[module].slice(1))),
+      resolve(workspaceRoot, mfeDir(mfe), "dist"),
+      resolve(siteDir, dirname(imports[mfe.module].slice(1))),
       { recursive: true },
     )
   }
