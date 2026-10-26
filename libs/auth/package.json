@@ -1,0 +1,15 @@
+{
+  "name": "@recrm/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "nx": {
+    "projectType": "library",
+    "sourceRoot": "libs/auth/src",
+    "targets": {
+      "deploy": {
+        "command": "node deploy/deploy.mjs mfe auth"
+      }
+    }
+  }
+}
