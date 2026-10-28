@@ -11,5 +11,8 @@
         "command": "node deploy/deploy.mjs mfe auth"
       }
     }
+  },
+  "dependencies": {
+    "axios": "1.20.0"
   }
 }
