@@ -4,7 +4,7 @@ import { ErrorResponse } from "../api-response.type"
 import { API_URL } from "../config"
 import { AUTH_PATH } from "./auth.constant"
 import { AuthError } from "./auth.error"
-import { AuthLoginRequest, AuthLoginResponse, AuthUser } from "./auth.type"
+import { AuthLoginRequest, AuthTokenResponse, AuthUser } from "./auth.type"
 
 const authClient = axios.create({
   baseURL: API_URL,
@@ -36,7 +36,14 @@ export const getMe = async (accessToken: string): Promise<AuthUser> => {
   return response.data
 }
 
-export const postLogin = async (data: AuthLoginRequest): Promise<AuthLoginResponse> => {
-  const response = await authClient.post<AuthLoginResponse>(AUTH_PATH.login, data)
+export const postLogin = async (data: AuthLoginRequest): Promise<AuthTokenResponse> => {
+  const response = await authClient.post<AuthTokenResponse>(AUTH_PATH.login, data)
+  return response.data
+}
+
+export const postRefresh = async (): Promise<AuthTokenResponse> => {
+  const response = await authClient.post<AuthTokenResponse>(AUTH_PATH.refresh, undefined, {
+    headers: { "x-requested-with": "fetch" },
+  })
   return response.data
 }
