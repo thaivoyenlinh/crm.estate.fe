@@ -1,5 +1,5 @@
-export const AUTH_PATH = {
-  login: "/auth/login",
-  me: "/me",
-  refresh: "/auth/refresh",
-}
+export const AUTH_PATHS = {
+  LOGIN: "/auth/login",
+  ME: "/me",
+  REFRESH: "/auth/refresh",
+} as const

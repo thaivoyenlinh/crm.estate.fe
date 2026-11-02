@@ -1,9 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios"
 
-import { ErrorResponse } from "../api-response.type"
-import { API_URL } from "../config"
 import { refreshAccessToken } from "../session/auth.action"
 import { getAccessToken } from "../session/auth.state"
+import { API_ERROR_CODES, API_URL, ErrorResponse } from "../shared"
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -33,7 +32,10 @@ apiClient.interceptors.response.use(
 const handleError = (error: AxiosError<Partial<ErrorResponse | undefined>>) => {
   const { config, response, status } = error
   const canRetry =
-    status === 401 && response?.data?.code === "token_invalid" && config && !config.isRetry
+    status === 401 &&
+    response?.data?.code === API_ERROR_CODES.TOKEN_INVALID &&
+    config &&
+    !config.isRetry
 
   if (canRetry) return handle401Error(config)
 
