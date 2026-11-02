@@ -1,5 +1,7 @@
+import { API_ERROR_CODES } from "../shared"
 import { getMe, postLogin, postRefresh } from "./auth.api"
-import { setAccessToken, setSession } from "./auth.state"
+import { AuthError } from "./auth.error"
+import { clearSession, setAccessToken, setSession } from "./auth.state"
 
 let refreshPromise: Promise<void> | null = null
 
@@ -9,19 +11,22 @@ export const login = async (email: string, password: string) => {
   setSession(accessToken, user)
 }
 
-const getRefreshAccessToken = async (): Promise<void> => {
-  const { accessToken } = await postRefresh()
-  setAccessToken(accessToken)
-}
-
 export const refreshAccessToken = async () => {
   if (refreshPromise) return refreshPromise
 
-  refreshPromise = getRefreshAccessToken()
+  refreshPromise = renewAccessToken()
 
   try {
     await refreshPromise
+  } catch (error) {
+    if (error instanceof AuthError && error.code === API_ERROR_CODES.REFRESH_INVALID) clearSession()
+    throw error
   } finally {
     refreshPromise = null
   }
+}
+
+const renewAccessToken = async (): Promise<void> => {
+  const { accessToken } = await postRefresh()
+  setAccessToken(accessToken)
 }

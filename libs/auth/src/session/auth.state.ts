@@ -19,3 +19,7 @@ export const setAccessToken = (accessToken: string) => {
     session = Object.freeze({ ...session, accessToken })
   }
 }
+
+export const clearSession = () => {
+  session = null
+}
