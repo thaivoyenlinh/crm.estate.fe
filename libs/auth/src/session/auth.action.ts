@@ -1,5 +1,6 @@
 import { API_ERROR_CODES } from "../shared"
 import { getMe, postLogin, postRefresh } from "./auth.api"
+import { AUTH_REFRESH_LOCK } from "./auth.constant"
 import { AuthError } from "./auth.error"
 import { clearSession, setAccessToken, setSession } from "./auth.state"
 
@@ -26,7 +27,8 @@ export const refreshAccessToken = async () => {
   }
 }
 
-const renewAccessToken = async (): Promise<void> => {
-  const { accessToken } = await postRefresh()
-  setAccessToken(accessToken)
-}
+const renewAccessToken = () =>
+  navigator.locks.request(AUTH_REFRESH_LOCK, async () => {
+    const { accessToken } = await postRefresh()
+    setAccessToken(accessToken)
+  })
