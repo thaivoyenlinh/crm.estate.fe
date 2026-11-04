@@ -1,8 +1,10 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios"
+import axios, { AxiosError, HttpStatusCode } from "axios"
 
 import { refreshAccessToken } from "../session/auth.action"
-import { getAccessToken } from "../session/auth.state"
+import { clearSession, getAccessToken } from "../session/auth.state"
 import { API_ERROR_CODES, API_URL, ErrorResponse } from "../shared"
+
+type ApiError = AxiosError<Partial<ErrorResponse | undefined>>
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -29,21 +31,26 @@ apiClient.interceptors.response.use(
   },
 )
 
-const handleError = (error: AxiosError<Partial<ErrorResponse | undefined>>) => {
-  const { config, response, status } = error
-  const canRetry =
-    status === 401 &&
-    response?.data?.code === API_ERROR_CODES.TOKEN_INVALID &&
-    config &&
-    !config.isRetry
+const handleError = (error: ApiError) => {
+  const { response, status } = error
 
-  if (canRetry) return handle401Error(config)
+  const isTokenInvalid =
+    status === HttpStatusCode.Unauthorized && response?.data?.code === API_ERROR_CODES.TOKEN_INVALID
 
-  throw error
+  if (!isTokenInvalid) throw error
+  return handleTokenInvalid(error)
 }
 
-const handle401Error = async (config: InternalAxiosRequestConfig) => {
-  config.isRetry = true
-  await refreshAccessToken()
-  return apiClient(config)
+const handleTokenInvalid = async (error: ApiError) => {
+  const config = error.config
+  const canRetry = config && !config.isRetry
+
+  if (canRetry) {
+    config.isRetry = true
+    await refreshAccessToken()
+    return apiClient(config)
+  }
+
+  clearSession()
+  throw error
 }
