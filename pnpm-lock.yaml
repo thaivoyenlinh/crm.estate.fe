@@ -200,6 +200,9 @@ importers:
 
   apps/root-config:
     dependencies:
+      '@recrm/auth':
+        specifier: workspace:*
+        version: link:../../libs/auth
       single-spa-layout:
         specifier: ^3.0.0
         version: 3.0.0

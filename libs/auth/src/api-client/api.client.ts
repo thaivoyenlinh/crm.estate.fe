@@ -3,6 +3,7 @@ import axios, { AxiosError, HttpStatusCode } from "axios"
 import { refreshAccessToken } from "../session/auth.action"
 import { clearSession, getAccessToken } from "../session/auth.state"
 import { API_ERROR_CODES, API_URL, ErrorResponse } from "../shared"
+import type {} from "./axios"
 
 type ApiError = AxiosError<Partial<ErrorResponse | undefined>>
 
