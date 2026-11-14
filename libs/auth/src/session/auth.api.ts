@@ -19,3 +19,9 @@ export const postRefresh = async (): Promise<AuthTokenResponse> => {
   })
   return response.data
 }
+
+export const postLogout = async (): Promise<void> => {
+  await authClient.post(AUTH_PATHS.LOGOUT, undefined, {
+    headers: { "x-requested-with": "fetch" },
+  })
+}

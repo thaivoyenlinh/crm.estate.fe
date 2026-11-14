@@ -1,5 +1,5 @@
 import { API_ERROR_CODES } from "../shared"
-import { getMe, postLogin, postRefresh } from "./auth.api"
+import { getMe, postLogin, postLogout, postRefresh } from "./auth.api"
 import { AUTH_REFRESH_LOCK } from "./auth.constant"
 import { AuthError } from "./auth.error"
 import { clearSession, setAccessToken, setSession } from "./auth.state"
@@ -49,5 +49,13 @@ export const restoreSession = async () => {
     if (isSessionEnded) return false
 
     throw error
+  }
+}
+
+export const logout = async () => {
+  try {
+    await postLogout()
+  } finally {
+    clearSession()
   }
 }
