@@ -22,7 +22,8 @@
       "dependsOn": ["build"]
     },
     "lint": {
-      "cache": true
+      "cache": true,
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
     },
     "dev": {
       "cache": false

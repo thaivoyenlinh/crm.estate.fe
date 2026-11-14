@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "lint": "eslint src"
+  },
   "nx": {
     "projectType": "application",
     "sourceRoot": "apps/leads/src",
