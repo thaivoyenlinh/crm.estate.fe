@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "exports": "./src/main.ts",
+  "scripts": {
+    "lint": "eslint src"
+  },
   "nx": {
     "projectType": "library",
     "sourceRoot": "libs/auth/src",
