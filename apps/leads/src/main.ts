@@ -4,7 +4,7 @@ import { createApp, h } from "vue"
 
 import "./styles.css"
 
-import App from "./Leads.vue"
+import LeadsApp from "./LeadsApp.vue"
 import router from "./router/index.js"
 
 const cssLifecycles = singleSpaCss({
@@ -16,7 +16,7 @@ const vueLifecycles = singleSpaVue({
 
   appOptions: {
     render() {
-      return h(App)
+      return h(LeadsApp)
     },
   },
 
