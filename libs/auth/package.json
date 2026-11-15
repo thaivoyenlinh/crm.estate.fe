@@ -5,7 +5,8 @@
   "type": "module",
   "exports": "./src/main.ts",
   "scripts": {
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "vitest run"
   },
   "nx": {
     "projectType": "library",

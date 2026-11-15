@@ -11,6 +11,7 @@
     "build:all": "nx run-many -t build",
     "build:navbar": "nx build @recrm/navbar",
     "lint:all": "nx run-many -t lint",
+    "test:all": "nx run-many -t test",
     "preview:site": "nx run-many -t build && node deploy/preview.mjs",
     "deploy:site": "node deploy/deploy.mjs"
   },
@@ -46,6 +47,7 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "8.72.2",
     "vite": "^8.2.2",
+    "vitest": "4.1.12",
     "vue-eslint-parser": "10.4.2",
     "vue-tsc": "^3.3.11",
     "wrangler": "^4.147.0"
